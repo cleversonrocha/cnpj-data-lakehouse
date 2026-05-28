@@ -1,0 +1,15 @@
+# Meus dados e buckets do Data Lake local
+minio_data/
+*.csv
+*.zip
+*.parquet
+
+# Meu ambiente Python e senhas
+venv/
+.env
+__pycache__/
+config/
+
+# Logs e banco de dados do Airflow
+logs/
+postgres-db-volume/
