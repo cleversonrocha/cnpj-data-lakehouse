@@ -11,6 +11,11 @@ Os dados públicos do CNPJ são pesados, divididos em múltiplos arquivos `.zip`
 
 Meu desafio foi criar um processo automatizado para ingerir, limpar, transformar e disponibilizar esses dados para análises rápidas, aplicando o conceito de **Arquitetura Medalhão**.
 
+### 🗂️ Fonte dos Dados
+Os dados brutos processados neste pipeline são públicos, disponibilizados pela Receita Federal do Brasil e atualizados mensalmente.
+- **Portal de Dados Abertos:** [Cadastro Nacional da Pessoa Jurídica - CNPJ](https://dados.gov.br/dados/conjuntos-dados/cadastro-nacional-da-pessoa-juridica---cnpj)
+- **Formato de Origem:** Arquivos `.zip` contendo tabelas `.csv` com o cadastro completo de empresas, estabelecimentos, sócios e tabelas de domínio.
+
 ## 🛠️ Stack Tecnológico que estou estudando/aplicando
 
 Como minha máquina local atua como o servidor, decidi usar o **Docker** para isolar e orquestrar os seguintes serviços:
