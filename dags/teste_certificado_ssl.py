@@ -3,7 +3,7 @@ import pendulum
 import requests
 
 @dag(
-    dag_id="teste_conexao_ssl_profissional",
+    dag_id="teste_certificado_ssl",
     schedule=None,
     start_date=pendulum.datetime(2026, 1, 1, tz="America/Sao_Paulo"),
     catchup=False,
