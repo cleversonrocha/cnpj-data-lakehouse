@@ -33,7 +33,7 @@ Como minha máquina local atua como o servidor, decidi usar o **Docker** para is
 
 ### 🗺️ Diagrama da Arquitetura
 
-
+![Pipeline de Dados - RFB](pipeline_rfb.gif)
 
 ## ⚙️ Como rodar na sua máquina
 
