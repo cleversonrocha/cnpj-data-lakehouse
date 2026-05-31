@@ -18,7 +18,7 @@ def teste_env_vars():
         endpoint = os.getenv("MINIO_ENDPOINT")
         user = os.getenv("MINIO_ROOT_USER")
         password = os.getenv("MINIO_ROOT_PASSWORD")
-        bucket = os.getenv("MINIO_BUCKET_BRONZE")        
+        bucket = 'bronze'
         
         print(f"-> MINIO_ENDPOINT: {endpoint}")
         print(f"-> MINIO_ROOT_USER: {user}")
