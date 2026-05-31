@@ -12,11 +12,11 @@ MINIO_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD")
 BUCKET_BRONZE = os.getenv("MINIO_BUCKET_BRONZE")
 
 @dag(
-    dag_id="ingestao_receita_federal_bronze_v1",
+    dag_id="ingestao_bronze",
     schedule="@monthly",
-    start_date=pendulum.datetime(2026, 5, 1, tz="America/Sao_Paulo"),
+    start_date=pendulum.datetime(2026, 1, 1, tz="America/Sao_Paulo"),
     catchup=False,
-    tags=["ingestao", "receita_federal", "bronze", "otimizado"],
+    tags=["ingestao", "bronze"],
 )
 def rfb_datalake_ingestion():
 
@@ -33,7 +33,7 @@ def rfb_datalake_ingestion():
 
     @task
     def baixar_e_enviar_minio(url: str):
-
+        
         """Baixa em partes para o disco (se necessário), extrai e envia para o MinIO."""
         s3_client = boto3.client(
             's3', 
@@ -84,6 +84,6 @@ def rfb_datalake_ingestion():
     # Ordem de execução
     link = gerar_link_dinamico()
     baixar_e_enviar_minio(link)
-
+    
 # Instanciação da DAG
 dag_execucao = rfb_datalake_ingestion()
