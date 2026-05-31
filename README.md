@@ -33,36 +33,7 @@ Como minha máquina local atua como o servidor, decidi usar o **Docker** para is
 
 ### 🗺️ Diagrama da Arquitetura
 
-```mermaid
-graph TD
-    %% Cores e Estilos
-    classDef source fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef orquestrador fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:2px;
-    classDef processing fill:#ffebee,stroke:#b71c1c,stroke-width:2px;
-    classDef analytics fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px;
-
-    %% Nós do Diagrama
-    RFB[🌐 Portal Receita Federal<br/>Arquivos .zip]:::source
-    Airflow[⚙️ Apache Airflow<br/>Download e Extração]:::orquestrador
-    Bronze[(🥉 MinIO Bronze<br/>Raw .csv)]:::storage
-    Spark1[⚡ PySpark<br/>Limpeza e Tipagem]:::processing
-    Silver[(🥈 MinIO Silver<br/>Clean .parquet)]:::storage
-    Spark2[⚡ PySpark<br/>Agregação Gold]:::processing
-    Gold[(🥇 MinIO Gold<br/>Business .parquet)]:::storage
-    DuckDB[🦆 DuckDB<br/>Consultas SQL]:::analytics
-    PBI[📊 Power BI<br/>Dashboards]:::analytics
-
-    %% Conexões
-    RFB -->|Ingestão| Airflow
-    Airflow -->|Upload| Bronze
-    Bronze -->|Leitura| Spark1
-    Spark1 -->|Escrita| Silver
-    Silver -->|Leitura| Spark2
-    Spark2 -->|Escrita| Gold
-    Gold -->|Conexão httpfs| DuckDB
-    Gold -->|Conexão Direta| PBI
-```
+![Pipeline de Dados - RFB](pipeline_rfb.gif)
 
 ## ⚙️ Como rodar na sua máquina
 
