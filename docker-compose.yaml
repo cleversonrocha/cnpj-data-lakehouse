@@ -108,6 +108,7 @@ services:
     volumes:
       #- ./minio_data:/data # Salva os dados do S3 localmente para não perder ao desligar
       - D:/datalake_minio:/data
+    restart: always
 
   postgres:
     image: postgres:16
