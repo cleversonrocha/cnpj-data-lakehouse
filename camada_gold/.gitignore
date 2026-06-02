@@ -1,0 +1,29 @@
+
+# =========================
+# DBT (Data Build Tool)
+# =========================
+
+README.md
+models/example
+
+# Pasta onde o dbt guarda o código compilado e os ficheiros de execução
+target/
+
+# Dependências e pacotes do dbt (similar ao node_modules)
+dbt_packages/
+
+# Logs de execução do dbt
+logs/
+
+# =========================
+# DUCKDB (Arquivos Locais)
+# =========================
+
+# O ficheiro de base de dados local que o dbt usa para guardar os metadados
+dbt_meta.db
+dbt_meta.db.wal
+
+# =========================
+# CREDENCIAIS
+# =========================
+profiles.yml
