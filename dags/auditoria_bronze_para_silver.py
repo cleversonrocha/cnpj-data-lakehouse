@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger("airflow.task")
 
 @dag(
-    dag_id='auditoria_bronze_para_sillver',
+    dag_id='auditoria_bronze_para_silver',
     description='Verifica a quantidade de registros das camadas bronze(zip) e silver(parquet)',
     start_date=pendulum.datetime(2026, 5, 1, tz="America/Sao_Paulo"),
     schedule=None,
@@ -18,7 +18,7 @@ logger = logging.getLogger("airflow.task")
     tags=['auditoria', 'data lakehouse']
 )
 @task
-def auditoria_ingestao_bronze_para_sillver():
+def auditoria_ingestao_bronze_para_silver():
     # ==========================================
     # ⚙️ CONFIGURAÇÕES
     # ==========================================
@@ -27,7 +27,7 @@ def auditoria_ingestao_bronze_para_sillver():
     MINIO_SECRET_KEY = os.getenv("MINIO_ROOT_PASSWORD")
     BUCKET_BRONZE = 'bronze'
     PREFIXO_BRONZE = 'dados_crus/referencia_2026_05/' # Ajuste para a sua pasta na bronze
-    PASTA_TEMP = 'D:/airflow_temp/auditoria'
+    PASTA_TEMP = '/opt/airflow/temp/auditoria'
 
     # Lista com todas as entidades a serem auditadas
     ENTIDADES = ['Motivos', 'Qualificacoes', 'Naturezas', 'Paises', 'Cnaes', 'Municipios', 'Socios', 'Empresas', 'Estabelecimentos']
@@ -153,4 +153,4 @@ def auditoria_ingestao_bronze_para_sillver():
 
     logger.info("="*85 + "\n")
 
-dag_execucao = auditoria_ingestao_bronze_para_sillver()
+dag_execucao = auditoria_ingestao_bronze_para_silver()
