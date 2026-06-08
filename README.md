@@ -28,7 +28,7 @@ Como minha máquina local atua como o servidor, decidi usar o **Docker** para is
 ## 🏗️ Como estruturei os dados (Arquitetura Medalhão)
 
 - 🥉 **Bronze:** O Airflow baixa os Zips da Receita, extrai os CSVs e salva no MinIO exatamente como vieram (dados brutos).
-- 🥈 **Silver:** O PySpark lê a Bronze, adiciona os cabeçalhos, tipa as colunas, trata nulos. Os dados são salvos em `.parquet`.
+- 🥈 **Silver:** O DuckDB lê a Bronze, adiciona os cabeçalhos, tipa as colunas, trata nulos. Os dados são salvos em `.parquet`.
 - 🥇 **Gold:** Agregações e cruzamentos (ex: Estabelecimentos + Municípios + CNAEs) para criar um modelo pronto para ferramentas de BI, como o Power BI.
 
 ### 🗺️ Diagrama da Arquitetura
