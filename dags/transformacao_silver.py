@@ -40,7 +40,7 @@ def datalake_silver():
     #ano_mes = pendulum.now("America/Sao_Paulo").format("YYYY_MM")     
 
     @task
-    def processar_entidades_unicas(tabela_nome: str, arquivo_zip: str, tabela_colunas_originais: list):
+    def processar_entidades_unicas(tabela_nome: str, arquivo_zip: str):
         logger.info(f"Iniciando processamento da tabela: {tabela_nome.upper()}")        
         
         try:            
@@ -74,7 +74,7 @@ def datalake_silver():
             
             con.execute(f"""
                 COPY (
-                    SELECT {', '.join(tabela_colunas_originais)}
+                    SELECT column0 AS codigo, column1 AS descricao
                     FROM read_csv_auto(
                         '{caminho_csv_extraido}', 
                         sep=';', 
@@ -99,12 +99,12 @@ def datalake_silver():
     tarefa_anterior = None
 
     tabelas_para_processar = [
-        {"nome": "motivos", "zip": "Motivos.zip", "colunas_originais": ["column0 AS codigo", "column1 AS descricao"]},
-        {"nome": "qualificacoes", "zip": "Qualificacoes.zip", "colunas_originais": ["column0 AS codigo", "column1 AS descricao"]},
-        {"nome": "naturezas", "zip": "Naturezas.zip", "colunas_originais": ["column0 AS codigo", "column1 AS descricao"]},
-        {"nome": "paises", "zip": "Paises.zip", "colunas_originais": ["column0 AS codigo", "column1 AS descricao"]},
-        {"nome": "cnaes", "zip": "Cnaes.zip", "colunas_originais": ["column0 AS codigo", "column1 AS descricao"]},
-        {"nome": "municipios", "zip": "Municipios.zip", "colunas_originais": ["column0 AS codigo", "column1 AS descricao"]}      
+        {"nome": "motivos", "zip": "Motivos.zip"},
+        {"nome": "qualificacoes", "zip": "Qualificacoes.zip"},
+        {"nome": "naturezas", "zip": "Naturezas.zip"},
+        {"nome": "paises", "zip": "Paises.zip"},
+        {"nome": "cnaes", "zip": "Cnaes.zip"},
+        {"nome": "municipios", "zip": "Municipios.zip"}      
     ]     
 
     # Loop Gerador de Tarefas       
@@ -112,8 +112,7 @@ def datalake_silver():
         # Usamos o .override() para dar um nome visual único a cada bloco no Airflow
         tarefa_atual = processar_entidades_unicas.override(task_id=f"processar_{tabela['nome']}")(
             tabela_nome=tabela['nome'],             
-            arquivo_zip=tabela['zip'],
-            tabela_colunas_originais=tabela['colunas_originais']            
+            arquivo_zip=tabela['zip']
         )
 
         # Se já existir uma tarefa anterior, forçamos a atual a esperar por ela
@@ -257,7 +256,7 @@ def datalake_silver():
                                                                                            "column28 AS situacao_especial",
                                                                                            "column29 AS data_situacao_especial"]}
     ]
-
+    
     for entidade in grandes_entidades:
         # Instancia a tarefa atual
         tarefa_atual = processar_entidades_particionadas.override(task_id=f"unificar_{entidade['nome']}")(
