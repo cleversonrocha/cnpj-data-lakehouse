@@ -6,11 +6,11 @@ models:
     columns:
       - name: codigo_cnae
         description: "Código numérico da atividade econômica (Ex: 6204000)."
-        tests:
+        data_tests:
           - unique
           - not_null
       
       - name: descricao_cnae
         description: "Nome descritivo da atividade (Ex: Consultoria em tecnologia da informação)."
-        tests:
+        data_tests:
           - not_null
