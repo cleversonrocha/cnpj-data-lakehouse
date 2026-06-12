@@ -40,7 +40,7 @@ def datalake_silver():
     #ano_mes = pendulum.now("America/Sao_Paulo").format("YYYY_MM")     
 
     @task
-    def processar_entidades_unicas(tabela_nome: str, arquivo_zip: str):
+    def processar_entidades_unicas(tabela_nome: str, arquivo_zip: str, tabela_colunas_originais: list):
         logger.info(f"Iniciando processamento da tabela: {tabela_nome.upper()}")        
         
         try:            
@@ -74,7 +74,7 @@ def datalake_silver():
             
             con.execute(f"""
                 COPY (
-                    SELECT *
+                    SELECT {', '.join(tabela_colunas_originais)}
                     FROM read_csv_auto(
                         '{caminho_csv_extraido}', 
                         sep=';', 
@@ -99,20 +99,21 @@ def datalake_silver():
     tarefa_anterior = None
 
     tabelas_para_processar = [
-        {"nome": "motivos", "zip": "Motivos.zip"},
-        {"nome": "qualificacoes", "zip": "Qualificacoes.zip"},
-        {"nome": "naturezas", "zip": "Naturezas.zip"},
-        {"nome": "paises", "zip": "Paises.zip"},
-        {"nome": "cnaes", "zip": "Cnaes.zip"},
-        {"nome": "municipios", "zip": "Municipios.zip"}      
-    ]        
+        {"nome": "motivos", "zip": "Motivos.zip", "colunas_originais": ["column0 AS codigo", "column1 AS descricao"]},
+        {"nome": "qualificacoes", "zip": "Qualificacoes.zip", "colunas_originais": ["column0 AS codigo", "column1 AS descricao"]},
+        {"nome": "naturezas", "zip": "Naturezas.zip", "colunas_originais": ["column0 AS codigo", "column1 AS descricao"]},
+        {"nome": "paises", "zip": "Paises.zip", "colunas_originais": ["column0 AS codigo", "column1 AS descricao"]},
+        {"nome": "cnaes", "zip": "Cnaes.zip", "colunas_originais": ["column0 AS codigo", "column1 AS descricao"]},
+        {"nome": "municipios", "zip": "Municipios.zip", "colunas_originais": ["column0 AS codigo", "column1 AS descricao"]}      
+    ]     
 
     # Loop Gerador de Tarefas       
     for tabela in tabelas_para_processar:
         # Usamos o .override() para dar um nome visual único a cada bloco no Airflow
         tarefa_atual = processar_entidades_unicas.override(task_id=f"processar_{tabela['nome']}")(
-            tabela_nome=tabela['nome'], 
-            arquivo_zip=tabela['zip']
+            tabela_nome=tabela['nome'],             
+            arquivo_zip=tabela['zip'],
+            tabela_colunas_originais=tabela['colunas_originais']            
         )
 
         # Se já existir uma tarefa anterior, forçamos a atual a esperar por ela
@@ -123,7 +124,7 @@ def datalake_silver():
         tarefa_anterior = tarefa_atual
     
     @task
-    def processar_entidades_particionadas(entidade_nome: str, prefixo_arquivo: str):
+    def processar_entidades_particionadas(entidade_nome: str, prefixo_arquivo: str, tabela_colunas_originais: list):
         logger.info(f"Iniciando processamento massivo da entidade: {entidade_nome.upper()}")        
                
         pasta_temp = f"/opt/airflow/temp/{entidade_nome}"
@@ -184,7 +185,7 @@ def datalake_silver():
         logger.info(f"Analisando, tipando e unificando partes em: {caminho_busca_csv}")
         con.execute(f"""
             COPY (
-                SELECT *
+                SELECT {', '.join(tabela_colunas_originais)}
                 FROM read_csv_auto(
                     '{caminho_busca_csv}', 
                     sep=';', 
@@ -207,16 +208,62 @@ def datalake_silver():
     # Configuração das 3 grandes entidades do projeto
     # Estabelecimentos por último porque é o mais pesado.
     grandes_entidades = [
-        {"nome": "socios", "prefixo": "Socios"},
-        {"nome": "empresas", "prefixo": "Empresas"},        
-        {"nome": "estabelecimentos", "prefixo": "Estabelecimentos"}
-    ]    
+        {"nome": "socios", "prefixo": "Socios", "colunas_originais": ["column00 AS cnpj_basico",
+                                                                      "column01 AS identificador", 
+                                                                      "column02 AS nome_razao_social", 
+                                                                      "column03 AS cpf_cnpj",                                                                       
+                                                                      "column04 AS qualificacao", 
+                                                                      "column05 AS data_entrada_sociedade", 
+                                                                      "column06 AS pais", 
+                                                                      "column07 AS representante_legal", 
+                                                                      "column08 AS nome_do_representante", 
+                                                                      "column09 AS qualificacao_representante",                                                                       
+                                                                      "column10 AS faixa_etaria_socio"]},
+        {"nome": "empresas", "prefixo": "Empresas", "colunas_originais": ["column0 AS cnpj_basico", 
+                                                                          "column1 AS razao_social", 
+                                                                          "column2 AS natureza_juridica",
+                                                                          "column3 AS qualificacao_responsavel",
+                                                                          "column4 AS capital_social",
+                                                                          "column5 AS porte_empresa",
+                                                                          "column6 AS ente_federativo_responsavel"]},
+        {"nome": "estabelecimentos", "prefixo": "Estabelecimentos", "colunas_originais": ["column00 AS cnpj_basico",
+                                                                                           "column01 AS cnpj_ordem",
+                                                                                           "column02 AS cnpj_dv",
+                                                                                           "column03 AS identificador_matriz_filial",
+                                                                                           "column04 AS nome_fantasia",
+                                                                                           "column05 AS situacao_cadastral",
+                                                                                           "column06 AS data_situacao_cadastral",
+                                                                                           "column07 AS motivo_situacao_cadastral",
+                                                                                           "column08 AS nome_cidade_exterior",
+                                                                                           "column09 AS pais",
+                                                                                           "column10 AS data_inicio_atividade",
+                                                                                           "column11 AS cnae_fiscal_principal",
+                                                                                           "column12 AS cnae_fiscal_secundaria",
+                                                                                           "column13 AS tipo_logradouro",
+                                                                                           "column14 AS logradouro",
+                                                                                           "column15 AS numero",
+                                                                                           "column16 AS complemento",
+                                                                                           "column17 AS bairro",
+                                                                                           "column18 AS cep",
+                                                                                           "column19 AS uf",
+                                                                                           "column20 AS municipio",
+                                                                                           "column21 AS ddd_1",
+                                                                                           "column22 AS telefone_1",
+                                                                                           "column23 AS ddd_2",
+                                                                                           "column24 AS telefone_2",
+                                                                                           "column25 AS ddd_fax",
+                                                                                           "column26 AS fax",
+                                                                                           "column27 AS email",
+                                                                                           "column28 AS situacao_especial",
+                                                                                           "column29 AS data_situacao_especial"]}
+    ]
 
     for entidade in grandes_entidades:
         # Instancia a tarefa atual
         tarefa_atual = processar_entidades_particionadas.override(task_id=f"unificar_{entidade['nome']}")(
             entidade_nome=entidade['nome'],
-            prefixo_arquivo=entidade['prefixo']
+            prefixo_arquivo=entidade['prefixo'],
+            tabela_colunas_originais=entidade['colunas_originais']
         )
         
         # Se já existir uma tarefa anterior, forçamos a atual a esperar por ela
