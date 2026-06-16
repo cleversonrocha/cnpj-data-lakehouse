@@ -70,11 +70,11 @@ def datalake_silver():
                 SET s3_url_style='path';
             """)
                     
-            caminho_silver = f"s3://silver/{tabela_nome}/{tabela_nome}.parquet"
+            caminho_silver = f"s3://silver/raw/{tabela_nome}.parquet"
             
             con.execute(f"""
                 COPY (
-                    SELECT column0 AS codigo, column1 AS descricao
+                    SELECT *
                     FROM read_csv_auto(
                         '{caminho_csv_extraido}', 
                         sep=';', 
@@ -123,7 +123,7 @@ def datalake_silver():
         tarefa_anterior = tarefa_atual
     
     @task
-    def processar_entidades_particionadas(entidade_nome: str, prefixo_arquivo: str, tabela_colunas_originais: list):
+    def processar_entidades_particionadas(entidade_nome: str, prefixo_arquivo: str):
         logger.info(f"Iniciando processamento massivo da entidade: {entidade_nome.upper()}")        
                
         pasta_temp = f"/opt/airflow/temp/{entidade_nome}"
@@ -177,14 +177,14 @@ def datalake_silver():
             SET s3_url_style='path';
         """)
         
-        caminho_silver = f"s3://silver/{entidade_nome}/{entidade_nome}.parquet"
+        caminho_silver = f"s3://silver/raw/{entidade_nome}.parquet"
         # O asterisco engloba todos os arquivos extraídos na pasta temporária
         caminho_busca_csv = os.path.join(pasta_temp, "part_*")
         
         logger.info(f"Analisando, tipando e unificando partes em: {caminho_busca_csv}")
         con.execute(f"""
             COPY (
-                SELECT {', '.join(tabela_colunas_originais)}
+                SELECT *
                 FROM read_csv_auto(
                     '{caminho_busca_csv}', 
                     sep=';', 
@@ -207,62 +207,16 @@ def datalake_silver():
     # Configuração das 3 grandes entidades do projeto
     # Estabelecimentos por último porque é o mais pesado.
     grandes_entidades = [
-        {"nome": "socios", "prefixo": "Socios", "colunas_originais": ["column00 AS cnpj_basico",
-                                                                      "column01 AS identificador", 
-                                                                      "column02 AS nome_razao_social", 
-                                                                      "column03 AS cpf_cnpj",                                                                       
-                                                                      "column04 AS qualificacao", 
-                                                                      "column05 AS data_entrada_sociedade", 
-                                                                      "column06 AS pais", 
-                                                                      "column07 AS representante_legal", 
-                                                                      "column08 AS nome_do_representante", 
-                                                                      "column09 AS qualificacao_representante",                                                                       
-                                                                      "column10 AS faixa_etaria_socio"]},
-        {"nome": "empresas", "prefixo": "Empresas", "colunas_originais": ["column0 AS cnpj_basico", 
-                                                                          "column1 AS razao_social", 
-                                                                          "column2 AS natureza_juridica",
-                                                                          "column3 AS qualificacao_responsavel",
-                                                                          "column4 AS capital_social",
-                                                                          "column5 AS porte_empresa",
-                                                                          "column6 AS ente_federativo_responsavel"]},
-        {"nome": "estabelecimentos", "prefixo": "Estabelecimentos", "colunas_originais": ["column00 AS cnpj_basico",
-                                                                                           "column01 AS cnpj_ordem",
-                                                                                           "column02 AS cnpj_dv",
-                                                                                           "column03 AS identificador_matriz_filial",
-                                                                                           "column04 AS nome_fantasia",
-                                                                                           "column05 AS situacao_cadastral",
-                                                                                           "column06 AS data_situacao_cadastral",
-                                                                                           "column07 AS motivo_situacao_cadastral",
-                                                                                           "column08 AS nome_cidade_exterior",
-                                                                                           "column09 AS pais",
-                                                                                           "column10 AS data_inicio_atividade",
-                                                                                           "column11 AS cnae_fiscal_principal",
-                                                                                           "column12 AS cnae_fiscal_secundaria",
-                                                                                           "column13 AS tipo_logradouro",
-                                                                                           "column14 AS logradouro",
-                                                                                           "column15 AS numero",
-                                                                                           "column16 AS complemento",
-                                                                                           "column17 AS bairro",
-                                                                                           "column18 AS cep",
-                                                                                           "column19 AS uf",
-                                                                                           "column20 AS municipio",
-                                                                                           "column21 AS ddd_1",
-                                                                                           "column22 AS telefone_1",
-                                                                                           "column23 AS ddd_2",
-                                                                                           "column24 AS telefone_2",
-                                                                                           "column25 AS ddd_fax",
-                                                                                           "column26 AS fax",
-                                                                                           "column27 AS email",
-                                                                                           "column28 AS situacao_especial",
-                                                                                           "column29 AS data_situacao_especial"]}
+        {"nome": "socios", "prefixo": "Socios"},
+        {"nome": "empresas", "prefixo": "Empresas"},
+        {"nome": "estabelecimentos", "prefixo": "Estabelecimentos"}
     ]
     
     for entidade in grandes_entidades:
         # Instancia a tarefa atual
         tarefa_atual = processar_entidades_particionadas.override(task_id=f"unificar_{entidade['nome']}")(
             entidade_nome=entidade['nome'],
-            prefixo_arquivo=entidade['prefixo'],
-            tabela_colunas_originais=entidade['colunas_originais']
+            prefixo_arquivo=entidade['prefixo']
         )
         
         # Se já existir uma tarefa anterior, forçamos a atual a esperar por ela
