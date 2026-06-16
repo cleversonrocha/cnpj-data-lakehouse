@@ -285,7 +285,9 @@ models:
         data_type: string
         constraints:
           - type: not_null
+          - type: primary_key
         data_tests:
+          - unique
           - not_null
       
       - name: razao_social
