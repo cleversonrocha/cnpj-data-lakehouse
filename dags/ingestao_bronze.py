@@ -109,7 +109,7 @@ def rfb_datalake_ingestion():
                 nome_limpo = nome_arquivo.replace("\\", "/").split("/")[-1]
                 
                 if nome_limpo.endswith('.csv') or nome_limpo.endswith('.zip'):
-                    caminho_s3 = f"dados_crus/referencia_{pendulum.now('America/Sao_Paulo').format('YYYY_MM')}/{nome_limpo}"
+                    caminho_s3 = f"raw/{pendulum.now('America/Sao_Paulo').format('YYYY_MM')}/{nome_limpo}"
                     logger.info(f" -> A enviar para o MinIO: {caminho_s3}")
                     
                     with z_master.open(nome_arquivo) as arquivo_extraido:
