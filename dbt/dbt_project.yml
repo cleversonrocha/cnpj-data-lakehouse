@@ -31,13 +31,13 @@ models:
   cnpj_data_lakehouse:
 
 on-run-end:
-  - "COPY silver_cnaes TO 's3://silver/cleaned/cnaes.parquet' (FORMAT PARQUET);"
-  - "COPY silver_empresas TO 's3://silver/cleaned/empresas.parquet' (FORMAT PARQUET);"
-  - "COPY silver_estabelecimentos TO 's3://silver/cleaned/estabelecimentos.parquet' (FORMAT PARQUET);"
-  - "COPY silver_motivos TO 's3://silver/cleaned/motivos.parquet' (FORMAT PARQUET);"
-  - "COPY silver_municipios TO 's3://silver/cleaned/municipios.parquet' (FORMAT PARQUET);"
-  - "COPY silver_naturezas TO 's3://silver/cleaned/naturezas.parquet' (FORMAT PARQUET);"
-  - "COPY silver_paises TO 's3://silver/cleaned/paises.parquet' (FORMAT PARQUET);"
-  - "COPY silver_qualificacoes TO 's3://silver/cleaned/qualificacoes.parquet' (FORMAT PARQUET);"
-  - "COPY silver_socios TO 's3://silver/cleaned/socios.parquet' (FORMAT PARQUET);"
+  - "COPY {{ ref('silver_cnaes') }} TO 's3://silver/cleaned/cnaes.parquet' (FORMAT PARQUET);"
+  - "COPY {{ ref('silver_empresas') }} TO 's3://silver/cleaned/empresas.parquet' (FORMAT PARQUET);"
+  - "COPY {{ ref('silver_estabelecimentos') }} TO 's3://silver/cleaned/estabelecimentos.parquet' (FORMAT PARQUET);"
+  - "COPY {{ ref('silver_motivos') }} TO 's3://silver/cleaned/motivos.parquet' (FORMAT PARQUET);"
+  - "COPY {{ ref('silver_municipios') }} TO 's3://silver/cleaned/municipios.parquet' (FORMAT PARQUET);"
+  - "COPY {{ ref('silver_naturezas') }} TO 's3://silver/cleaned/naturezas.parquet' (FORMAT PARQUET);"
+  - "COPY {{ ref('silver_paises') }} TO 's3://silver/cleaned/paises.parquet' (FORMAT PARQUET);"
+  - "COPY {{ ref('silver_qualificacoes') }} TO 's3://silver/cleaned/qualificacoes.parquet' (FORMAT PARQUET);"
+  - "COPY {{ ref('silver_socios') }} TO 's3://silver/cleaned/socios.parquet' (FORMAT PARQUET);"
       
