@@ -1,0 +1,511 @@
+version: 2
+
+models:
+  - name: silver_motivos
+    description: "Motivos de baixa ou inatividade de empresas."
+    config:
+      materialized: table
+      contract:
+        enforced: true
+    columns:
+      - name: codigo
+        description: "Código do motivo."
+        data_type: integer
+        constraints:
+          - type: not_null
+          - type: primary_key
+        data_tests:
+          - unique
+          - not_null
+
+      - name: descricao
+        description: "Descrição do motivo."
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: data_processamento
+        description: "Data e hora do processamento dos dados."
+        data_type: timestamptz
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+  - name: silver_qualificacoes
+    description: "Qualificações dos sócios de empresas."
+    config:
+      materialized: table
+      contract:
+        enforced: true
+    columns:
+      - name: codigo
+        description: "Código da qualificação do sócio."
+        data_type: integer
+        constraints:
+          - type: not_null
+          - type: primary_key
+        data_tests:
+          - unique
+          - not_null
+
+      - name: descricao
+        description: "Nome da qualificação do sócio."
+        data_type: string
+        constraints:
+          - type: not_null  
+        data_tests:
+          - not_null  
+      
+      - name: data_processamento
+        description: "Data e hora do processamento dos dados."
+        data_type: timestamptz
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+  - name: silver_naturezas
+    description: "Naturezas jurídicas das empresas."
+    config:
+      materialized: table
+      contract:
+        enforced: true
+    columns:
+      - name: codigo
+        description: "Código da natureza jurídica."
+        data_type: integer
+        constraints:
+          - type: not_null
+          - type: primary_key
+        data_tests:
+          - unique
+          - not_null
+
+      - name: descricao
+        description: "Nome da natureza jurídica."
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: data_processamento
+        description: "Data e hora do processamento dos dados."
+        data_type: timestamptz
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+          
+  - name: silver_paises
+    description: "Tabela com os países do mundo."
+    config:
+      materialized: table
+      contract:
+        enforced: true
+    columns:
+      - name: codigo
+        description: "Código do país."
+        data_type: integer
+        constraints:
+          - type: not_null
+          - type: primary_key
+        data_tests:
+          - unique
+          - not_null
+      
+      - name: descricao
+        description: "Nome do país."
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: data_processamento
+        description: "Data e hora do processamento dos dados."
+        data_type: timestamptz
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+  - name: silver_cnaes
+    description: "Tabela de Classificação Nacional de Atividades Econômicas (CNAE) da Receita Federal."
+    config:
+      materialized: table
+      contract:
+        enforced: true
+    columns:
+      - name: codigo        
+        description: "Código da atividade econômica."
+        data_type: integer
+        constraints:
+          - type: not_null
+          - type: primary_key
+        data_tests:
+          - unique
+          - not_null
+      
+      - name: descricao
+        description: "Nome da atividade econômica."
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: data_processamento
+        description: "Data e hora do processamento dos dados."
+        data_type: timestamptz
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+  - name: silver_municipios  
+    description: "Tabela de municípios do Brasil."    
+    config:
+      materialized: table
+      contract:
+        enforced: true
+    columns:
+      - name: codigo        
+        description: "Código do município."
+        data_type: integer
+        constraints:
+          - type: not_null
+          - type: primary_key
+        data_tests:
+          - unique
+          - not_null
+      
+      - name: descricao
+        description: "Nome do município."
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: data_processamento
+        description: "Data e hora do processamento dos dados."
+        data_type: timestamptz
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+  - name: silver_socios
+    description: "Tabela de sócios de empresas."
+    config:
+      materialized: table
+      contract:
+        enforced: true
+    columns:
+      - name: cnpj_basico
+        description: "Número base de inscrição no CNPJ (CADASTRO NACIONAL DA  PESSOA JURÍDICA)."
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: identificador
+        description: "Código do identificador de sócio (1 - PESSOA JURÍDICA | 2 - PESSOA FÍSICA | 3 - ESTRANGEIRO)"
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: nome_razao_social
+        description: "Nome do sócio pessoa física ou a razão social e/ou nome empresarial da pessoa jurídica e/ou nome do sócio/razão social do sócio estrangeiro."
+        data_type: string
+                
+      - name: cpf_cnpj
+        description: "CPF ou CNPJ do sócio (SÓCIO ESTRANGEIRO NÃO TEM ESTA INFORMAÇÃO)."        
+        data_type: string
+
+      - name: qualificacao
+        description: "Código da qualificação do sócio, referenciando a tabela de qualificações."
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+                          
+      - name: data_entrada_sociedade
+        description: "Data de entrada na sociedade."
+        data_type: date
+      
+      - name: pais
+        description: "Código do país do sócio estrangeiro."
+        data_type: integer
+
+      - name: representante_legal
+        description: "Número do CPF do representante legal."
+        data_type: string
+
+      - name: nome_do_representante
+        description: "Nome do representante legal."
+        data_type: string
+
+      - name: qualificacao_representante
+        description: "Código da qualificação do representante legal"
+        data_type: integer
+
+      - name: faixa_etaria_socio
+        description: "Código correspondente à faixa etária do sócio."
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: data_processamento
+        description: "Data e hora do processamento dos dados."
+        data_type: timestamptz
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+  - name: silver_empresas
+    config:
+      materialized: table
+      contract:
+        enforced: true
+    columns:
+      - name: cnpj_basico
+        description: "Número base de inscrição no CNPJ (OITO PRIMEIROS DÍGITOS DO CNPJ)."                
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+      
+      - name: razao_social
+        description: "Nome empresarial da pessoa jurídica."
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: natureza_juridica
+        description: "Código da natureza jurídica."
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: qualificacao_responsavel
+        description: "Qualificação da pessoa física responsável pela empresa."
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: capital_social
+        description: "Capital social da empresa."
+        data_type: decimal(15,2)
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: porte_empresa
+        description: "Código do porte da empresa (0  - NÃO INFORMADO | 1  -  MICRO EMPRESA | 3 - EMPRESA DE PEQUENO PORTE | 5 - DEMAIS)"
+        data_type: integer
+        
+      - name: ente_federativo_responsavel        
+        description: "O ente federativo responsável é preenchido para os casos de orgãos e entidades do grupo de natureza jurídica 1xxx. Para as demais naturezas, este atributo fica em branco."
+        data_type: string
+        
+      - name: data_processamento
+        description: "Data e hora do processamento dos dados."
+        data_type: timestamptz
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+  - name: silver_estabelecimentos
+    description: "Tabela contendo os dados cadastrais dos estabelecimentos (Matrizes e Filiais) extraídos da Receita Federal."
+    config:
+        materialized: table
+        contract:
+          enforced: true
+    columns:
+      - name: cnpj_basico
+        description: "Número base de inscrição no CNPJ (Oito primeiros dígitos)."
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: cnpj_ordem
+        description: "Número do estabelecimento de inscrição no CNPJ (Do nono até o décimo segundo dígito)."
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: cnpj_dv
+        description: "Dígito verificador do número de inscrição no CNPJ (Dois últimos dígitos)."
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: identificador_matriz_filial
+        description: "Código do identificador Matriz/Filial (1 - MATRIZ | 2 - FILIAL)"
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null          
+
+      - name: nome_fantasia
+        description: "Corresponde ao nome fantasia do estabelecimento."
+        data_type: string
+        
+      - name: situacao_cadastral
+        description: "Código da situação cadastral (01 - NULA | 2 - ATIVA | 3 - SUSPENSA | 4 - INAPTA | 08 - BAIXADA)"
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+          
+      - name: data_situacao_cadastral
+        description: "Data do evento da situação cadastral."
+        data_type: date
+        
+      - name: motivo_situacao_cadastral
+        description: "Código do motivo da situação cadastral."
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: nome_cidade_exterior
+        description: "Nome da cidade no exterior (quando aplicável)."
+        data_type: string
+        
+      - name: pais
+        description: "Código do país."
+        data_type: integer
+        
+      - name: data_inicio_atividade
+        description: "Data de início da atividade do estabelecimento."
+        data_type: date
+        
+      - name: cnae_fiscal_principal
+        description: "Código da atividade econômica principal do estabelecimento."
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: cnae_fiscal_secundaria
+        description: "Código da(s) atividade(s) econômica(s) secundária(s) do estabelecimento."
+        data_type: string
+        
+      - name: tipo_logradouro
+        description: "Descrição do tipo de logradouro."
+        data_type: string
+        
+      - name: logradouro
+        description: "Nome do logradouro onde se localiza o estabelecimento."
+        data_type: string
+        
+      - name: numero
+        description: "Número onde se localiza o estabelecimento. Quando não houver preenchimento o padrão é 'S/N'."
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: complemento
+        description: "Complemento para o endereço de localização do estabelecimento."
+        data_type: string
+        
+      - name: bairro
+        description: "Bairro onde se localiza o estabelecimento."
+        data_type: string
+        
+      - name: cep
+        description: "Código de Endereçamento Postal referente ao logradouro no qual o estabelecimento esta localizado."
+        data_type: string
+        
+      - name: uf
+        description: "Sigla da Unidade da Federação em que se encontra o estabelecimento."
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: municipio
+        description: "Código do município de jurisdição onde se encontra o estabelecimento."
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: ddd_1
+        description: "Contém o DDD 1."
+        data_type: varchar
+        
+      - name: telefone_1
+        description: "Contém o número do telefone 1."
+        data_type: varchar
+        
+      - name: ddd_2
+        description: "Contém o DDD 2."
+        data_type: varchar
+        
+      - name: telefone_2
+        description: "Contém o número do telefone 2."
+        data_type: varchar
+        
+      - name: ddd_fax
+        description: "Contém o DDD do fax."
+        data_type: varchar
+        
+      - name: fax
+        description: "Contém o número do fax."
+        data_type: varchar
+        
+      - name: email
+        description: "Contém o e-mail do contribuinte."
+        data_type: varchar
+        
+      - name: situacao_especial
+        description: "Situação especial da empresa."
+        data_type: varchar
+        
+      - name: data_situacao_especial
+        description: "Data em que a empresa entrou em situação especial."
+        data_type: date
+        
+      - name: data_processamento
+        description: "Data e hora em que este registro foi processado na camada Silver."
+        data_type: timestamptz
+        data_tests:
+          - not_null            
+      

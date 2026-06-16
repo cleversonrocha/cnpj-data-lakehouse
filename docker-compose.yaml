@@ -84,7 +84,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
     - ${AIRFLOW_PROJ_DIR:-.}/certs:/opt/airflow/certs
-    - ${AIRFLOW_PROJ_DIR:-.}/camada_gold:/opt/airflow/dbt/camada_gold
+    - ${AIRFLOW_PROJ_DIR:-.}/dbt:/opt/airflow/dbt
     - D:/airflow_temp:/opt/airflow/temp    
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
