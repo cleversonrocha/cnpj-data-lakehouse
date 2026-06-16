@@ -1,6 +1,5 @@
 {{ config(
-    materialized='external',
-    location='s3://silver/cleaned/cnaes.parquet'
+    materialized='table'    
 ) }}
 
 SELECT 

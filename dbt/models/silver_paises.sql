@@ -1,6 +1,5 @@
 {{ config(
-    materialized='external',    
-    location='s3://silver/cleaned/paises.parquet'
+    materialized='table'
 ) }}
 
 SELECT 
