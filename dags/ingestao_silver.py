@@ -132,7 +132,7 @@ def datalake_silver():
         # Loop para baixar e extrair os 10 pedaços (0 a 9)          
         for i in range(10):        
             nome_zip = f"{prefixo_arquivo}{i}.zip"
-            key_bronze = f"dados_crus/referencia_{ano_mes}/{nome_zip}"
+            key_bronze = f"raw/{ano_mes}/{nome_zip}"
             caminho_zip_local = os.path.join(pasta_temp, nome_zip)
             
             logger.info(f"[{i+1}/10] Baixando {nome_zip}...")
