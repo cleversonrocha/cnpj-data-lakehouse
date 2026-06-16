@@ -10,12 +10,12 @@ SET s3_use_ssl=false; -- Como é localhost, não usa HTTPS
 SET s3_region='us-east-1'; -- Valor padrão, apenas para preencher o requisito do protocolo
 SET s3_url_style='path'; -- MUITO IMPORTANTE para o MinIO local funcionar!
 
-SELECT * FROM read_parquet('s3://silver/cnaes/cnaes.parquet');
-SELECT * FROM read_parquet('s3://silver/motivos/motivos.parquet');
-SELECT * FROM read_parquet('s3://silver/municipios/municipios.parquet');
-SELECT * FROM read_parquet('s3://silver/naturezas/naturezas.parquet');
-SELECT * FROM read_parquet('s3://silver/paises/paises.parquet');
-SELECT * FROM read_parquet('s3://silver/qualificacoes/qualificacoes.parquet');
-SELECT * FROM read_parquet('s3://silver/socios/socios.parquet') LIMIT 1000;
-SELECT * FROM read_parquet('s3://silver/empresas/empresas.parquet') LIMIT 1000;
-SELECT * FROM read_parquet('s3://silver/estabelecimentos/estabelecimentos.parquet') LIMIT 1000;
+SELECT * FROM read_parquet('s3://silver/cleaned/cnaes.parquet');
+SELECT * FROM read_parquet('s3://silver/cleaned/motivos.parquet');
+SELECT * FROM read_parquet('s3://silver/cleaned/municipios.parquet');
+SELECT * FROM read_parquet('s3://silver/cleaned/naturezas.parquet');
+SELECT * FROM read_parquet('s3://silver/cleaned/paises.parquet');
+SELECT * FROM read_parquet('s3://silver/cleaned/qualificacoes.parquet');
+SELECT * FROM read_parquet('s3://silver/cleaned/socios.parquet') LIMIT 1000;
+SELECT * FROM read_parquet('s3://silver/cleaned/empresas.parquet') LIMIT 1000;
+SELECT * FROM read_parquet('s3://silver/cleaned/estabelecimentos.parquet') LIMIT 1000;
