@@ -15,7 +15,7 @@ logger = logging.getLogger("airflow.task")
     schedule=None,
     start_date=pendulum.datetime(2026, 5, 1, tz="America/Sao_Paulo"),
     catchup=False,
-    tags=["transformacao", "silver"],
+    tags=["ingestao", "silver"],
 )    
 
 def datalake_silver():
