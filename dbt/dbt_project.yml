@@ -29,6 +29,7 @@ clean-targets: # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 models:
   cnpj_data_lakehouse:
+    +materialized: table        
 
 on-run-end:
   - "COPY {{ ref('silver_cnaes') }} TO 's3://silver/cleaned/cnaes.parquet' (FORMAT PARQUET);"
