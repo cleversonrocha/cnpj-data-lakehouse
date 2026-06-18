@@ -3,7 +3,9 @@ from airflow.sdk.exceptions import AirflowException
 import pendulum
 import os
 import boto3
+import zipfile
 import duckdb
+import glob
 import logging
 
 logger = logging.getLogger("airflow.task")
@@ -103,43 +105,85 @@ def datalake_silver():
     
     @task
     def processar_entidades_particionadas(entidade_nome: str, prefixo_arquivo: str):
-        logger.info(f"Iniciando processamento massivo e direto da entidade: {entidade_nome.upper()}")        
+        logger.info(f"Iniciando processamento massivo da entidade: {entidade_nome.upper()}")        
+               
+        pasta_temp = f"/opt/airflow/temp/{entidade_nome}"
+        os.makedirs(pasta_temp, exist_ok=True)
+        
+        # Loop para baixar e extrair os 10 pedaços (0 a 9)          
+        for i in range(10):        
+            nome_zip = f"{prefixo_arquivo}{i}.zip"
+            key_bronze = f"raw/{ano_mes}/{nome_zip}"
+            caminho_zip_local = os.path.join(pasta_temp, nome_zip)
             
-        try:
-            con = duckdb.connect(database=':memory:')                   
-            con.execute("INSTALL httpfs; LOAD httpfs;")        
-            con.execute("INSTALL zipfs FROM community; LOAD zipfs;")
-            con.execute(f"""
-                SET s3_endpoint='{endpoint.removeprefix('http://')}';
-                SET s3_access_key_id='{user}';
-                SET s3_secret_access_key='{password}';
-                SET s3_use_ssl=false;
-                SET s3_url_style='path';
-            """)
-            
-            caminho_silver = f"s3://silver/raw/{entidade_nome}.parquet"                       
-            caminho_busca_zip = f"zip://s3://bronze/raw/{ano_mes}/{prefixo_arquivo}*.zip"
-            
-            logger.info(f"Vetorizando leitura dos ZIPs e gravando Parquet: {caminho_busca_zip}")
-            
-            con.execute(f"""
-                COPY (
-                    SELECT *
-                    FROM read_csv_auto(
-                        '{caminho_busca_zip}', 
-                        sep=';', 
-                        header=False,  
-                        encoding='utf-8',
-                        all_varchar=true,                    
-                        ignore_errors=true
-                    )
-                ) TO '{caminho_silver}' (FORMAT PARQUET);
-            """)        
-            
-            logger.info(f"Entidade {entidade_nome.upper()} unificada e salva com sucesso em: {caminho_silver}")
+            logger.info(f"[{i+1}/10] Baixando {nome_zip}...")
+            try:
+                s3_client.download_file('bronze', key_bronze, caminho_zip_local)
+                
+                logger.info(f"[Operação Salva-Linha] Higienizando bytes da parte {i}...")
+                with zipfile.ZipFile(caminho_zip_local, 'r') as z:
+                    nome_interno = z.namelist()[0]
+                    caminho_csv_local = os.path.join(pasta_temp, f"part_{i}_{nome_interno}")
+                                        
+                    with z.open(nome_interno) as f_in, open(caminho_csv_local, 'w', encoding='utf-8') as f_out:
+                        for linha in f_in:
+                            # 1. Remove os Null Bytes
+                            linha_limpa = linha.replace(b'\x00', b'')                            
+                            linha_final = linha_limpa.decode('latin-1', errors='replace')
+                            
+                            # 3. Grava a String no arquivo de texto
+                            f_out.write(linha_final)                        
+                                    
+                    os.remove(caminho_zip_local)
+                
+            except Exception as e:
+                logger.info(f"Aviso: Falha ao processar a parte {i}. Erro: {e}")
+                continue
+        
+        logger.info("🦆 Iniciando unificação vetorizada com DuckDB...")
+        
+        pasta_duckdb_tmp = "/opt/airflow/temp/duckdb_cache"
+        os.makedirs(pasta_duckdb_tmp, exist_ok=True)
+        
+        con = duckdb.connect(database=':memory:')
+        con.execute(f"PRAGMA temp_directory='{pasta_duckdb_tmp}';")               
+        con.execute("PRAGMA memory_limit='10GB';") 
+        con.execute("INSTALL httpfs; LOAD httpfs;")        
+        
+        con.execute(f"""
+            SET s3_endpoint='{endpoint.removeprefix('http://')}';
+            SET s3_access_key_id='{user}';
+            SET s3_secret_access_key='{password}';
+            SET s3_use_ssl=false;
+            SET s3_url_style='path';
+        """)
+        
+        caminho_silver = f"s3://silver/raw/{entidade_nome}.parquet"
+        # O asterisco engloba todos os arquivos extraídos na pasta temporária
+        caminho_busca_csv = os.path.join(pasta_temp, "part_*")
+        
+        logger.info(f"Analisando, tipando e unificando partes em: {caminho_busca_csv}")
+        con.execute(f"""
+            COPY (
+                SELECT *
+                FROM read_csv_auto(
+                    '{caminho_busca_csv}', 
+                    sep=';', 
+                    header=False,  
+                    encoding='utf-8',                  
+                    all_varchar=true,                    
+                    ignore_errors=false
+                )
+            ) TO '{caminho_silver}' (FORMAT PARQUET);
+        """)        
 
-        except Exception as e:
-            raise AirflowException(f"Erro no processamento unificado de {entidade_nome.upper()}: {e}")
+        logger.info("Limpeza profunda do disco temporário...")
+        arquivos_para_limpar = glob.glob(os.path.join(pasta_temp, "*"))
+        for f in arquivos_para_limpar:
+            os.remove(f)
+        os.rmdir(pasta_temp)        
+        
+        logger.info(f"Entidade {entidade_nome.upper()} unificada com sucesso em Parquet!")
 
     # Configuração das 3 grandes entidades do projeto
     # Estabelecimentos por último porque é o mais pesado.
