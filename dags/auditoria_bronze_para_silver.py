@@ -98,9 +98,9 @@ def auditoria_ingestao_bronze_para_silver():
         
         resultados_auditoria.append({
             'Entidade': entidade,
-            'Origem': total_origem[0],
-            'Destino': total_parquet,
-            'Diferenca': diferenca,
+            'Origem': total_origem_f,
+            'Destino': total_parquet_f,
+            'Diferenca': f"{diferenca:,}".replace(',','.'),
             'Status': status
         })
 
@@ -114,7 +114,7 @@ def auditoria_ingestao_bronze_para_silver():
     logger.info("-" * 85)
 
     for r in resultados_auditoria:
-        logger.info(f"{r['Entidade']:<18} | {r['Origem']:<15,} | {r['Destino']:<15,} | {r['Diferenca']:<12,} | {r['Status']}")
+        logger.info(f"{r['Entidade']:<18} | {r['Origem']:<15} | {r['Destino']:<15} | {r['Diferenca']:<12} | {r['Status']}")
 
     logger.info("="*85 + "\n")
 
