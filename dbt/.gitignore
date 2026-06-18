@@ -27,3 +27,4 @@ dbt_meta.db.wal
 # CREDENCIAIS
 # =========================
 profiles.yml
+dbt_internal_packages/
