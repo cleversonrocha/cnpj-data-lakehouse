@@ -25,42 +25,24 @@ def auditoria_ingestao_bronze_para_silver():
     MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
     MINIO_ACCESS_KEY = os.getenv("MINIO_ROOT_USER")
     MINIO_SECRET_KEY = os.getenv("MINIO_ROOT_PASSWORD")
-    BUCKET_BRONZE = 'bronze'
-    PREFIXO_BRONZE = 'dados_crus/referencia_2026_05/' # Ajuste para a sua pasta na bronze
-    PASTA_TEMP = '/opt/airflow/temp/auditoria'
-
+        
     # Lista com todas as entidades a serem auditadas
     ENTIDADES = ['Motivos', 'Qualificacoes', 'Naturezas', 'Paises', 'Cnaes', 'Municipios', 'Socios', 'Empresas', 'Estabelecimentos']
-    
-    os.makedirs(PASTA_TEMP, exist_ok=True)
-
+        
     # ==========================================
     # 🦆 INICIALIZAÇÃO DUCKDB E BOTO3
     # ==========================================
     logger.info("⚙️ Configurando conexões...")
-    con = duckdb.connect()
-    con.execute(f"""
+    con = duckdb.connect(database=':memory:')
+    con.execute("INSTALL zipfs FROM community; LOAD zipfs;")
+    con.execute(f"""        
         INSTALL httpfs; LOAD httpfs;
         SET s3_endpoint='{MINIO_ENDPOINT.removeprefix('http://')}';
         SET s3_access_key_id='{MINIO_ACCESS_KEY}';
         SET s3_secret_access_key='{MINIO_SECRET_KEY}';
         SET s3_use_ssl=false;
         SET s3_url_style='path';
-    """)
-
-    s3_client = boto3.client(
-        's3',
-        endpoint_url=MINIO_ENDPOINT,
-        aws_access_key_id=MINIO_ACCESS_KEY,
-        aws_secret_access_key=MINIO_SECRET_KEY
-    )
-
-    # Busca todos os objetos da Bronze de uma vez para otimizar
-    objetos = s3_client.list_objects_v2(Bucket=BUCKET_BRONZE, Prefix=PREFIXO_BRONZE)
-    todos_zips_bronze = [
-        obj['Key'] for obj in objetos.get('Contents', []) 
-        if obj['Key'].lower().endswith('.zip')
-    ]
+    """)   
 
     # Lista para armazenar o resumo final
     resultados_auditoria = []
@@ -79,61 +61,44 @@ def auditoria_ingestao_bronze_para_silver():
         # 1. CONTAGEM DO DESTINO (PARQUET)
         # ------------------------------------------
         # Ajuste este caminho se a estrutura de pastas da Silver for diferente
-        caminho_parquet = f"s3://silver/{nome_entidade_min}/{nome_entidade_min}.parquet"
+        caminho_parquet = f"s3://silver/raw/{nome_entidade_min}.parquet"
         
         try:
             logger.info(f"🦆 Lendo Parquet: {caminho_parquet}")
             total_parquet = con.execute(f"SELECT COUNT(*) FROM '{caminho_parquet}'").fetchone()[0]
-            logger.info(f"✅ Total no Parquet: {total_parquet:,} registros")
+            total_parquet_f = f"{total_parquet:,}".replace(",", ".")
+            logger.info(f"✅ Total no Parquet: {total_parquet_f} registros")
         except Exception as e:
             logger.info(f"❌ Erro ao ler Parquet de {entidade}: {e}")
             total_parquet = 0
 
         # ------------------------------------------
         # 2. CONTAGEM DA ORIGEM (ZIPS NA BRONZE)
-        # ------------------------------------------
-        zips_para_contar = [
-            key for key in todos_zips_bronze 
-            if nome_entidade_min in key.split('/')[-1].lower()
-        ]
+        # ------------------------------------------                
+        logger.info("📦 Contando arquivos ZIP originais...")                 
+        logger.info(f"   📥 Contando {entidade}...")
+            
+        total_origem = con.execute(f"""
+                                SELECT count(*) as qtd FROM read_csv_auto('zip://s3://bronze/raw/2026_06/{entidade}*.zip',
+                                sep=';', 
+                                header=False,  
+                                encoding='utf-8',
+                                all_varchar=true,                    
+                                ignore_errors=true);
+                            """).fetchone()                                 
         
-        total_origem = 0
-        logger.info("📦 Contando arquivos ZIP originais...")
-        
-        if not zips_para_contar:
-            logger.info("⚠️ Nenhum arquivo ZIP encontrado para esta entidade.")
-        
-        for key in zips_para_contar:
-            nome_arquivo = key.split('/')[-1]
-            caminho_local = os.path.join(PASTA_TEMP, nome_arquivo)
-            
-            logger.info(f"   📥 Baixando {nome_arquivo}...")
-            s3_client.download_file(BUCKET_BRONZE, key, caminho_local)
-            
-            linhas_neste_zip = 0
-            with zipfile.ZipFile(caminho_local, 'r') as z:
-                nome_interno = z.namelist()[0]
-                with z.open(nome_interno, 'r') as f:
-                    for bloco in iter(lambda: f.read(10 * 1024 * 1024), b''):
-                        linhas_neste_zip += bloco.count(b'\n')
-                        
-            logger.info(f"      -> {linhas_neste_zip:,} linhas")
-            total_origem += linhas_neste_zip
-            
-            # Apaga o ficheiro
-            os.remove(caminho_local)
-            
-        logger.info(f"✅ Total nos ZIPs: {total_origem:,} registros")
+        total_origem_f = f"{total_origem[0]:,}".replace(",", ".")
+        logger.info(f"✅ Total no ZIP: {total_origem_f} registros")
         
         # ------------------------------------------
         # 3. REGISTRA RESULTADO
         # ------------------------------------------
-        diferenca = total_origem - total_parquet
+        diferenca = total_origem[0] - total_parquet
         status = "✅ OK" if diferenca == 0 else "⚠️ DIVERGÊNCIA"
         
         resultados_auditoria.append({
             'Entidade': entidade,
-            'Origem': total_origem,
+            'Origem': total_origem[0],
             'Destino': total_parquet,
             'Diferenca': diferenca,
             'Status': status
