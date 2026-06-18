@@ -22,7 +22,7 @@ SELECT * FROM read_parquet('s3://silver/cleaned/socios.parquet') LIMIT 1000;
 SELECT * FROM read_parquet('s3://silver/cleaned/empresas.parquet') LIMIT 1000;
 SELECT * FROM read_parquet('s3://silver/cleaned/estabelecimentos.parquet') LIMIT 1000;
 
-SELECT count(*) FROM read_parquet('s3://silver/raw/empresas.parquet') em 
+SELECT * FROM read_parquet('s3://silver/cleaned/empresas.parquet') em 
 JOIN read_parquet('s3://silver/cleaned/estabelecimentos.parquet') es ON es.cnpj_basico = em.cnpj_basico
 JOIN read_parquet('s3://silver/cleaned/municipios.parquet') mu ON mu.codigo = es.municipio
 JOIN read_parquet('s3://silver/cleaned/naturezas.parquet') n ON n.codigo = em.natureza_juridica
