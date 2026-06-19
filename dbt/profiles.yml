@@ -1,0 +1,24 @@
+cnpj_data_lakehouse:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: '/opt/airflow/temp/cnpj_data_lakehouse.db'
+      threads: 8
+            
+      extensions:
+        - httpfs
+        - aws
+        - iceberg
+          
+      settings:        
+        max_memory: '10GB'
+        memory_limit: '10GB'
+        temp_directory: '/opt/airflow/temp/duckdb_tmp'
+        preserve_insertion_order: false
+        s3_url_style: 'path'
+        s3_endpoint: 'minio:9000'
+        s3_use_ssl: false
+        s3_region: 'us-east-1'        
+        s3_access_key_id: "{{ env_var('MINIO_ROOT_USER') }}"      
+        s3_secret_access_key: "{{ env_var('MINIO_ROOT_PASSWORD') }}"
