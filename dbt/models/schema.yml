@@ -199,6 +199,67 @@ models:
         data_tests:
           - not_null
 
+  - name: stg_simples
+    description: "Tabela de dados do simples."
+    config:
+      materialized: table
+      contract:
+        enforced: true
+    columns:
+      - name: cnpj_basico
+        description: "Número base de inscrição no CNPJ (CADASTRO NACIONAL DA  PESSOA JURÍDICA)."
+        data_type: string
+        constraints:
+          - type: not_null
+          - type: primary_key
+        data_tests:
+          - unique
+          - not_null
+      
+      - name: opcao_simples
+        description: "Indicador da existência da opção pelo SIMPLES (S - SIM | N - NÃO | EM BRANCO - OUTROS)."
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: data_opcao_simples
+        description: "Data de opção pelo simples."
+        data_type: date
+        
+      - name: data_exclusao_simples
+        description: "Data de exclusão do simples."
+        data_type: date
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: opcao_mei
+        description: "Indicador da existência da opção pelo MEI (S - SIM | N - NÃO | EM BRANCO - OUTROS)."
+        data_type: string
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+
+      - name: data_opcao_mei
+        description: "Data de opção pelo MEI."
+        data_type: date
+        
+      - name: data_exclusao_mei
+        description: "Data de exclusão do MEI."
+        data_type: date
+              
+      - name: data_processamento
+        description: "Data e hora do processamento dos dados."
+        data_type: timestamptz
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null      
+
   - name: stg_socios
     description: "Tabela de sócios de empresas."
     config:
