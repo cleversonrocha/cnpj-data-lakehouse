@@ -10,16 +10,16 @@ SET s3_use_ssl=false; -- Como é localhost, não usa HTTPS
 SET s3_region='us-east-1'; -- Valor padrão, apenas para preencher o requisito do protocolo
 SET s3_url_style='path'; -- MUITO IMPORTANTE para o MinIO local funcionar!
 
-SELECT * FROM read_parquet('s3://silver/cleaned/2026_06/cnaes.parquet');
+SELECT * FROM read_parquet('s3://silver/cleaned/2026_06/qualificacoes.parquet');
 SELECT * FROM read_parquet('s3://silver/cleaned/2026_06/motivos.parquet');
-SELECT * FROM read_parquet('s3://silver/cleaned/2026_06/municipios.parquet');
 SELECT * FROM read_parquet('s3://silver/cleaned/2026_06/naturezas.parquet');
 SELECT * FROM read_parquet('s3://silver/cleaned/2026_06/paises.parquet');
-SELECT * FROM read_parquet('s3://silver/cleaned/2026_06/qualificacoes.parquet');
+SELECT * FROM read_parquet('s3://silver/cleaned/2026_06/cnaes.parquet');
+SELECT * FROM read_parquet('s3://silver/cleaned/2026_06/municipios.parquet');
+SELECT * FROM read_parquet('s3://silver/cleaned/2026_06/simples.parquet') LIMIT 1000;
 SELECT * FROM read_parquet('s3://silver/cleaned/2026_06/socios.parquet') LIMIT 1000;
 SELECT * FROM read_parquet('s3://silver/cleaned/2026_06/empresas.parquet') LIMIT 1000;
-SELECT * FROM read_parquet('s3://silver/raw/2026_06/simples.parquet') LIMIT 1000;
-SELECT column10,TRY_CAST(strptime(column10, '%Y%m%d') AS DATE) AS data_inicio_atividade FROM read_parquet('s3://silver/raw/2026_06/estabelecimentos.parquet') WHERE column00 = '41204028' LIMIT 1000;
+SELECT * FROM read_parquet('s3://silver/cleaned/2026_06/estabelecimentos.parquet') LIMIT 1000;
 
 SELECT * FROM read_parquet('s3://silver/cleaned/2026_06/empresas.parquet') em 
 JOIN read_parquet('s3://silver/cleaned/2026_06/estabelecimentos.parquet') es ON es.cnpj_basico = em.cnpj_basico
