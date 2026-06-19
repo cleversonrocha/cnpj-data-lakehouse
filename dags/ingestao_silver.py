@@ -55,7 +55,7 @@ def datalake_silver():
                     
             # O DuckDB acessa o ZIP no S3 e busca o CSV correspondente lá dentro de forma virtual            
             caminho_bronze_zip = f"zip://s3://bronze/raw/{ano_mes}/{arquivo_zip}"
-            caminho_silver = f"s3://silver/raw/{tabela_nome}.parquet"
+            caminho_silver = f"s3://silver/raw/{ano_mes}/{tabela_nome}.parquet"
             
             logger.info(f"Lendo diretamente do MinIO: {caminho_bronze_zip}")
             con.execute(f"""
@@ -158,7 +158,7 @@ def datalake_silver():
             SET s3_url_style='path';
         """)
         
-        caminho_silver = f"s3://silver/raw/{entidade_nome}.parquet"
+        caminho_silver = f"s3://silver/raw/{ano_mes}/{entidade_nome}.parquet"
         # O asterisco engloba todos os arquivos extraídos na pasta temporária
         caminho_busca_csv = os.path.join(pasta_temp, "part_*")
         
