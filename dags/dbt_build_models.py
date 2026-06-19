@@ -5,7 +5,7 @@ import pendulum
     dag_id="dbt_silver",
     description='Tratamento dos dados com dbt e gravação no MinIO',
     schedule=None,
-    start_date=pendulum.datetime(2026, 5, 1, tz="America/Sao_Paulo"),
+    start_date=pendulum.datetime(2026, 6, 1, tz="America/Sao_Paulo"),
     catchup=False,
     tags=["transformacao", "dbt"],
 )
@@ -13,7 +13,10 @@ def dbt_silver_dag():
 
     @task.bash
     def dbt_build() -> str:
-        return 'cd /opt/airflow/dbt && dbt build && rm -f /opt/airflow/temp/cnpj_data_lakehouse.db'   
+
+        ano_mes = pendulum.now("America/Sao_Paulo").format("YYYY_MM")
+
+        return f'cd /opt/airflow/dbt && dbt build --vars \'{{"ano_mes": "{ano_mes}"}}\' && rm -f /opt/airflow/temp/cnpj_data_lakehouse.db'
     
     dbt_build()
 

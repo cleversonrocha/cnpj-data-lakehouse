@@ -1,9 +1,13 @@
-{% macro export_to_s3(bucket_path, file_name) %}
+{% macro export_to_s3(bucket_path, file_name) %}    
 
-    {% set data_atual = modules.datetime.datetime.now().strftime('%Y_%m') %}        
+    {% if var('ano_mes', '') != '' %}    
+        {% set ano_mes = var('ano_mes') %}
+    {% else %}    
+        {% set ano_mes = modules.datetime.datetime.now().strftime('%Y_%m') %}
+    {% endif %}       
     
     {% set query %}
-        COPY {{ this }} TO 's3://{{ bucket_path }}/{{ data_atual }}/{{ file_name }}.parquet' (FORMAT PARQUET)
+        COPY {{ this }} TO 's3://{{ bucket_path }}/{{ ano_mes }}/{{ file_name }}.parquet' (FORMAT PARQUET)
     {% endset %}
 
     {{ return(query) }}
