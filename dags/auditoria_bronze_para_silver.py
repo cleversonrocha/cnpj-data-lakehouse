@@ -1,8 +1,6 @@
 from airflow.sdk import dag, task
 import pendulum
 import duckdb
-import boto3
-import zipfile
 import os
 import logging
 
@@ -28,9 +26,11 @@ def auditoria_ingestao_bronze_para_silver():
         
     # Lista com todas as entidades a serem auditadas
     ENTIDADES = ['Motivos', 'Qualificacoes', 'Naturezas', 'Paises', 'Cnaes', 'Municipios', 'Socios', 'Empresas', 'Estabelecimentos']
+
+    ano_mes = pendulum.now("America/Sao_Paulo").format("YYYY_MM")     
         
     # ==========================================
-    # 🦆 INICIALIZAÇÃO DUCKDB E BOTO3
+    # 🦆 INICIALIZAÇÃO DUCKDB
     # ==========================================
     logger.info("⚙️ Configurando conexões...")
     con = duckdb.connect(database=':memory:')
@@ -61,7 +61,7 @@ def auditoria_ingestao_bronze_para_silver():
         # 1. CONTAGEM DO DESTINO (PARQUET)
         # ------------------------------------------
         # Ajuste este caminho se a estrutura de pastas da Silver for diferente
-        caminho_parquet = f"s3://silver/raw/{nome_entidade_min}.parquet"
+        caminho_parquet = f"s3://silver/raw/{ano_mes}/{nome_entidade_min}.parquet"
         
         try:
             logger.info(f"🦆 Lendo Parquet: {caminho_parquet}")
@@ -79,7 +79,7 @@ def auditoria_ingestao_bronze_para_silver():
         logger.info(f"   📥 Contando {entidade}...")
             
         total_origem = con.execute(f"""
-                                SELECT count(*) as qtd FROM read_csv_auto('zip://s3://bronze/raw/2026_06/{entidade}*.zip',
+                                SELECT count(*) as qtd FROM read_csv_auto('zip://s3://bronze/raw/{ano_mes}/{entidade}*.zip',
                                 sep=';', 
                                 header=False,  
                                 encoding='utf-8',
