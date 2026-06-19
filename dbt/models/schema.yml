@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: silver_motivos
+  - name: stg_motivos
     description: "Motivos de baixa ou inatividade de empresas."
     config:
       materialized: table
@@ -34,7 +34,7 @@ models:
         data_tests:
           - not_null
 
-  - name: silver_qualificacoes
+  - name: stg_qualificacoes
     description: "Qualificações dos sócios de empresas."
     config:
       materialized: table
@@ -67,7 +67,7 @@ models:
         data_tests:
           - not_null
 
-  - name: silver_naturezas
+  - name: stg_naturezas
     description: "Naturezas jurídicas das empresas."
     config:
       materialized: table
@@ -100,7 +100,7 @@ models:
         data_tests:
           - not_null
           
-  - name: silver_paises
+  - name: stg_paises
     description: "Tabela com os países do mundo."
     config:
       materialized: table
@@ -133,7 +133,7 @@ models:
         data_tests:
           - not_null
 
-  - name: silver_cnaes
+  - name: stg_cnaes
     description: "Tabela de Classificação Nacional de Atividades Econômicas (CNAE) da Receita Federal."
     config:
       materialized: table
@@ -166,7 +166,7 @@ models:
         data_tests:
           - not_null
 
-  - name: silver_municipios  
+  - name: stg_municipios  
     description: "Tabela de municípios do Brasil."    
     config:
       materialized: table
@@ -199,7 +199,7 @@ models:
         data_tests:
           - not_null
 
-  - name: silver_socios
+  - name: stg_socios
     description: "Tabela de sócios de empresas."
     config:
       materialized: table
@@ -274,7 +274,7 @@ models:
         data_tests:
           - not_null
 
-  - name: silver_empresas
+  - name: stg_empresas
     config:
       materialized: table
       contract:
@@ -338,7 +338,7 @@ models:
         data_tests:
           - not_null
 
-  - name: silver_estabelecimentos
+  - name: stg_estabelecimentos
     description: "Tabela contendo os dados cadastrais dos estabelecimentos (Matrizes e Filiais) extraídos da Receita Federal."
     config:
         materialized: table

@@ -1,5 +1,8 @@
 {{ config(
-    materialized='table'
+    materialized='table',
+    post_hook=[
+        export_to_s3(bucket_path='silver/cleaned', file_name='socios')
+    ]
 ) }}
 
 SELECT    
@@ -15,4 +18,4 @@ SELECT
     CAST(column07 AS VARCHAR) AS representante_legal,
     CAST(column08 AS VARCHAR) AS nome_do_representante,     
     NOW() AS data_processamento
-FROM 's3://silver/raw/socios.parquet'
+FROM {{ get_raw_path(base_path='silver/raw', file_name='socios') }}

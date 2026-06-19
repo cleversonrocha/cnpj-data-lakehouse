@@ -1,5 +1,8 @@
 {{ config(
-    materialized='table'        
+    materialized='table',
+    post_hook=[
+        export_to_s3(bucket_path='silver/cleaned', file_name='estabelecimentos')
+    ]
 ) }}
 
 SELECT    
@@ -34,4 +37,4 @@ SELECT
     CAST(column28 AS VARCHAR) AS situacao_especial,
     TRY_CAST(column29 AS DATE) AS data_situacao_especial,        
     NOW() AS data_processamento
-FROM 's3://silver/raw/estabelecimentos.parquet'
+FROM {{ get_raw_path(base_path='silver/raw', file_name='estabelecimentos') }}
