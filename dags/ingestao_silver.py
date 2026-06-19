@@ -85,7 +85,8 @@ def datalake_silver():
         {"nome": "naturezas", "zip": "Naturezas.zip"},
         {"nome": "paises", "zip": "Paises.zip"},
         {"nome": "cnaes", "zip": "Cnaes.zip"},
-        {"nome": "municipios", "zip": "Municipios.zip"}      
+        {"nome": "municipios", "zip": "Municipios.zip"},
+        {"nome": "simples", "zip": "Simples.zip"}
     ]     
 
     # Loop Gerador de Tarefas       
