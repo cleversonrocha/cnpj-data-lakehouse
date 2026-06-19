@@ -1,4 +1,4 @@
-{% macro get_raw_path(base_path, file_name) %}
+{% macro get_s3_path(base_path, file_name) %}
 
     {% if var('ano_mes', '') != '' %}    
         {% set ano_mes = var('ano_mes') %}

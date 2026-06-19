@@ -14,6 +14,6 @@ SELECT
     CAST(column6 AS VARCHAR) AS ente_federativo_responsavel,         
     TRY_CAST(REPLACE(column4, ',', '.') AS DECIMAL(15, 2)) AS capital_social,        
     NOW() AS data_processamento
-FROM {{ get_raw_path(base_path='silver/raw', file_name='empresas') }}
+FROM {{ get_s3_path(base_path='silver/raw', file_name='empresas') }}
 --Necessário pelo registro duplicado e sem razão social na base de 06/2026
 WHERE column0 != '08314885' AND column1 IS NOT NULL
