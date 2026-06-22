@@ -25,8 +25,12 @@ SELECT
         THEN TRY_CAST(strptime(column10, '%Y%m%d') AS DATE)
         ELSE NULL
     END AS data_inicio_atividade,
-    CAST(column11 AS VARCHAR) AS cnae_fiscal_principal,
-    CAST(column12 AS VARCHAR) AS cnae_fiscal_secundaria, 
+    CAST(column11 AS VARCHAR) AS cnae_fiscal_principal,    
+    array_to_string(
+        list_distinct(
+            list_transform(string_split(column12, ','), x -> TRIM(x))
+        ), ','
+    ) AS cnae_fiscal_secundaria, 
     CAST(column13 AS VARCHAR) AS tipo_logradouro,
     CAST(column14 AS VARCHAR) AS logradouro,    
     CAST(column15 AS VARCHAR) AS numero,    
