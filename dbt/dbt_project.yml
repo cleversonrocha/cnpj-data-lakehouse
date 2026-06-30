@@ -28,6 +28,12 @@ clean-targets: # directories to be removed by `dbt clean`
 # directory as views. These settings can be overridden in the individual model
 # files using the `{{ config(...) }}` macro.
 models:
-  cnpj_data_lakehouse:
-    +materialized: table        
-    
+  cnpj_data_lakehouse:   
+      
+    staging:
+      +materialized: view
+          
+    marts:
+      +materialized: table
+      +contract:
+        enforced: true
