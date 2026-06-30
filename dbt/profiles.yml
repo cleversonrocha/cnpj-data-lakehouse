@@ -3,18 +3,16 @@ cnpj_data_lakehouse:
   outputs:
     dev:
       type: duckdb
-      path: '/opt/airflow/temp/cnpj_data_lakehouse.db'
-      threads: 8
+      path: '/opt/airflow/temp/cnpj_data_lakehouse.duckdb'
+      threads: 1
             
       extensions:
         - httpfs
         - aws
-        - iceberg
-          
+                  
       settings:        
         max_memory: '10GB'
-        memory_limit: '10GB'
-        temp_directory: '/opt/airflow/temp/duckdb_tmp'
+        memory_limit: '10GB'        
         preserve_insertion_order: false
         s3_url_style: 'path'
         s3_endpoint: 'minio:9000'
