@@ -20,9 +20,11 @@ WITH estabelecimentos AS (
         END AS data_situacao_cadastral,
         CAST(column07 AS INTEGER) AS motivo_situacao_cadastral,
         CAST(column08 AS VARCHAR) AS nome_cidade_exterior,
-        CASE         
-            WHEN column09 IS NULL AND column19 != 'EX' AND column20 != '9707' THEN 105 --BRASIL        
-            ELSE COALESCE(CAST(column09 AS INTEGER),999) -- 999 (NAO DECLARADOS)
+        CASE            
+            --Se achou o municipio e for diferente de EXTERIOR e o estado for diferente de EX, então o país será 105 (Brasil)
+            WHEN m.column0 IS NOT NULL AND m.column0 != '9707' THEN 105 --BRASIL
+            --Se achou o pais na tabela de paises retorna o mesmo caso contrario define como 999 (NAO DECLARADOS)            
+            ELSE COALESCE(CAST(p.column0 AS INTEGER),999) -- 999 (NAO DECLARADOS)
         END AS pais,
         null AS desc_pais,
         CASE 
@@ -59,7 +61,9 @@ WITH estabelecimentos AS (
             ELSE NULL
         END AS data_situacao_especial,        
         NOW() AS data_processamento
-    FROM {{ get_s3_path(base_path='silver/raw', file_name='estabelecimentos') }} e        
+    FROM {{ get_s3_path(base_path='silver/raw', file_name='estabelecimentos') }} e
+    LEFT JOIN read_parquet('s3://silver/raw/2026_06/paises.parquet') p ON p.column0 = e.column09
+    LEFT JOIN {{ get_s3_path(base_path='silver/raw', file_name='municipios') }} m ON m.column0 = e.column20
 )
 
 SELECT sk_id,
