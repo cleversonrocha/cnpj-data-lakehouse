@@ -11,8 +11,9 @@ cnpj_data_lakehouse:
         - aws
                   
       settings:        
-        max_memory: '10GB'
-        memory_limit: '10GB'        
+        max_memory: '16GB'
+        memory_limit: '16GB'        
+        temp_directory: '/opt/airflow/temp/tmp_duckdb'        
         preserve_insertion_order: false
         s3_url_style: 'path'
         s3_endpoint: 'minio:9000'
