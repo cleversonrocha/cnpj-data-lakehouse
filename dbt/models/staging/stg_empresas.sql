@@ -1,5 +1,4 @@
-{{ config(
-    materialized='table',
+{{ config(    
     post_hook=[
         export_to_s3(bucket_path='silver/cleaned', file_name='empresas')
     ]
@@ -15,5 +14,5 @@ SELECT
     TRY_CAST(REPLACE(column4, ',', '.') AS DECIMAL(15, 2)) AS capital_social,        
     NOW() AS data_processamento
 FROM {{ get_s3_path(base_path='silver/raw', file_name='empresas') }}
---Necessário pelo registro duplicado e sem razão social na base de 06/2026
-WHERE column0 != '08314885' AND column1 IS NOT NULL
+--Necessário pelo registro duplicado '08314885' e sem razão social na base de 06/2026
+WHERE column1 IS NOT NULL

@@ -1,5 +1,4 @@
-{{ config(
-    materialized='table',
+{{ config(    
     post_hook=[
         export_to_s3(bucket_path='silver/cleaned', file_name='motivos')
     ]
