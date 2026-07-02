@@ -2,22 +2,27 @@ from airflow.sdk import dag, task
 import pendulum
 
 @dag(
-    dag_id="dbt_silver",
+    dag_id="dbt_build_models",
     description='Tratamento dos dados com dbt e gravação no MinIO',
     schedule=None,
     start_date=pendulum.datetime(2026, 6, 1, tz="America/Sao_Paulo"),
     catchup=False,
     tags=["transformacao", "dbt"],
 )
-def dbt_silver_dag():
+def dbt_build_models():
+
+    ano_mes = '2026_06'
+    #ano_mes = pendulum.now("America/Sao_Paulo").format("YYYY_MM")
 
     @task.bash
-    def dbt_build() -> str:
+    def dbt_build_stg(ano_mes: str) -> str:      
 
-        ano_mes = pendulum.now("America/Sao_Paulo").format("YYYY_MM")
-
-        return f'cd /opt/airflow/dbt && dbt build --vars \'{{"ano_mes": "{ano_mes}"}}\' && rm -f /opt/airflow/temp/cnpj_data_lakehouse.db'
+        return f'cd /opt/airflow/dbt && dbt build --select staging --vars \'{{"ano_mes": "{ano_mes}"}}\''
     
-    dbt_build()
+    @task.bash
+    def dbt_build_dim(ano_mes: str) -> str:
+        return f'cd /opt/airflow/dbt && dbt build --select marts --vars \'{{\"ano_mes\": \"{ano_mes}\"}}\''     
+    
+    dbt_build_stg(ano_mes) >> dbt_build_dim(ano_mes)
 
-dag_execucao = dbt_silver_dag()
+dag_execucao = dbt_build_models()

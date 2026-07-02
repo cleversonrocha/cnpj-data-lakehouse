@@ -1,0 +1,454 @@
+version: 1
+
+models:
+  - name: dim_cnaes
+    description: "Dimensão de Classificação Nacional de Atividades Econômicas (CNAE)."
+    columns:
+      - name: sk_id
+        description: "Surrogate Key"
+        data_type: integer
+        constraints:
+          - type: unique
+          - type: not_null
+
+      - name: codigo
+        description: "Código CNAE"
+        data_type: varchar
+        constraints:
+          - type: unique
+          - type: not_null
+
+      - name: descricao
+        description: "Descrição da atividade econômica."
+        data_type: varchar
+        constraints:
+          - type: not_null
+
+  - name: dim_empresas
+    description: "Tabela de dimensão de empresas, contendo informações sobre porte, natureza jurídica, capital social e situação cadastral do MEI."
+    columns:
+      - name: sk_id
+        description: "Chave de identificação da empresa (baseada no CNPJ básico)."
+        data_type: varchar
+        contraints:
+          - type: unique
+          - type: not_null
+
+      - name: razao_social
+        description: "Razão social da empresa."
+        data_type: varchar
+        contraints:
+          - type: not_null
+
+      - name: porte
+        description: "Porte da empresa."
+        data_type: varchar
+        constraints:
+          - type: check
+            expression: "porte IN ('NÃO INFORMADO', 'MICRO EMPRESA', 'EMPRESA DE PEQUENO PORTE', 'DEMAIS')"
+
+      - name: ente_federativo_responsavel
+        description: "Ente federativo responsável, aplicável geralmente a órgãos e entidades da administração pública."
+        data_type: varchar
+
+      - name: capital_social
+        description: "Valor correspondente ao capital social da empresa."
+        data_type: decimal(15,2)
+
+      - name: natureza_juridica
+        description: "Descrição da natureza jurídica da empresa."
+        data_type: varchar
+
+      - name: qualificacao_responsavel
+        description: "Descrição da qualificação do responsável pela empresa."
+        data_type: varchar
+
+      - name: is_mei
+        description: "Indicador do histórico e status de opção pelo MEI (Microempreendedor Individual)."
+        data_type: varchar
+        constraints:
+        - type: check
+          expression: "is_mei IN ('SIM','NÃO (EX-MEI)','NÃO','NÃO INFORMADO')"
+
+  - name: dim_estabelecimentos
+    description: "Dimensão de estabelecimentos (matrizes e filiais) da Receita Federal."
+    columns:
+      - name: sk_id
+        description: "Surrogate key ROW_NUMBER() OVER(order by es.cnpj_basico,es.cnpj_ordem)"
+        data_type: integer
+        constraints:
+          - type: unique
+          - type: not_null
+
+      - name: cnpj_basico
+        description: "Oito primeiros digítos do CNPJ."
+        data_type: varchar
+        
+      - name: cnpj_ordem
+        description: "Ordem do CNPJ."
+        data_type: varchar
+
+      - name: cnpj_dv
+        description: "Digíto verificador do CNPJ."
+        data_type: varchar
+
+      - name: tipo_estabelecimento
+        description: "MATRIZ ou FILIAL."
+        data_type: varchar
+        constraints:
+          - type: check
+            expression: "tipo_estabelecimento IN ('MATRIZ','FILIAL')"
+              
+      - name: nome_fantasia
+        description: "Nome fantasia do estabelecimento."
+        data_type: varchar
+
+      - name: data_inicio_atividade
+        description: "Data de início da atividade do estabelecimento."
+        data_type: date
+
+      - name: situacao_cadastral
+        description: "Descrição da situação cadastral."
+        data_type: varchar
+        constraints:
+          - type: check
+            expression: "situacao_cadastral IN ('NULA','ATIVA','SUSPENSA','INAPTA','BAIXADA')"
+
+      - name: data_situacao_cadastral
+        description: "Data de início da atividade do estabelecimento."
+        data_type: date
+
+      - name: motivo_situacao_cadastral
+        description: "Descrição do motivo da situação cadastral."
+        data_type: varchar
+
+      - name: data_situacao_especial
+        description: "Data da situação especial."
+        data_type: date
+
+      - name: situacao_especial
+        description: "Descrição da situação especial."
+        data_type: varchar      
+
+  - name: dim_localizacao
+    description: "Dimensão de localização geográfica de estabelecimentos. Consolida dados de estados (UF), municípios brasileiros e países estrangeiros."
+    data_type: varchar
+    constraints:
+      -  type: unique
+         columns: [uf, desc_municipio, pais, desc_pais]
+    columns:
+      - name: sk_id
+        description: "Chave substituta (Surrogate Key) artificial e única para identificar cada combinação de localização."
+        data_type: integer
+        constraints:
+          - type: unique
+          - type: not_null
+
+      - name: uf
+        description: "Sigla da Unidade Federativa (Estado). Ex: SP, RJ, PR."
+        data_type: varchar
+        constraints:
+          - type: not_null
+        
+      - name: desc_municipio
+        description: "Nome descritivo do município. Para casos internacionais, armazena o nome da cidade no exterior."
+        data_type: varchar
+        constraints:
+          - type: not_null
+
+      - name: pais
+        description: "Código do país."
+        data_type: integer
+        constraints:
+          - type: not_null
+
+      - name: desc_pais
+        description: "Nome descritivo do município. Para casos internacionais, armazena o nome da cidade no exterior."
+        data_type: varchar
+                
+  - name: dim_quadro_societario
+    description: "Dimensão de sócios das empresas."
+    columns:
+      - name: sk_id
+        description: "Surrogate key ROW_NUMBER() OVER()"
+        data_type: integer
+        constraints:
+          - type: unique
+          - type: not_null
+          
+      - name: cnpj_basico
+        data_type: varchar
+        constraints:
+          - type: not_null
+
+      - name: pessoa
+        data_type: varchar
+        constraints:
+          - type: check
+            expressiona: "pessoa IN ('PESSOA FÍSICA', 'PESSOA JURÍDICA', 'ESTRANGEIRO')"
+
+      - name: nome_razao_social
+        data_type: varchar
+        
+      - name: cpf_cnpj
+        data_type: varchar
+        
+      - name: qualificacao_socio
+        data_type: varchar
+        constraints:
+          - type: not_null
+
+      - name: data_entrada_sociedade
+        data_type: date
+        constraints:
+          - type: not_null
+
+      - name: pais_socio
+        data_type: varchar
+        
+      - name: representante_legal
+        data_type: varchar
+        constraints:
+          - type: not_null
+
+      - name: nome_do_representante
+        data_type: varchar
+        
+      - name: qualificacao_representante
+        data_type: varchar
+        constraints:
+          - type: not_null
+
+      - name: faixa_etaria_socio
+        data_type: varchar
+        constraints:
+          - type: check
+            expressions: "faixa_etaria_socio IN ('0 a 12 anos',
+                                                 '13 a 20 anos',
+                                                 '21 a 30 anos',
+                                                 '31 a 40 anos',
+                                                 '41 a 50 anos',
+                                                 '51 a 60 anos',
+                                                 '61 a 70 anos',
+                                                 '71 a 80 anos',
+                                                 'maiores de 80 anos', 'não se aplica')"                 
+
+  - name: dim_tempo
+    description: "Dimensão de tempo agregada a nível mensal, gerada a partir das datas de início de atividade dos estabelecimentos."
+    columns:
+      - name: sk_id
+        description: "Chave substituta (Surrogate Key) da dimensão tempo, formatada como número inteiro (YYYYMMDD)."
+        data_type: integer  
+        constraints:
+          - type: unique
+          - type: not_null
+
+      - name: ano
+        description: "Ano correspondente à data."
+        data_type: smallint
+
+      - name: mes
+        description: "Número do mês (1 a 12)."
+        data_type: tinyint
+
+      - name: dia
+        description: "Número do dia (1 a 31)."
+        data_type: tinyint
+
+      - name: trimestre
+        description: "Número do trimestre do ano (1 a 4)."
+        data_type: tinyint
+
+      - name: semestre
+        description: "Número do semestre do ano (1 ou 2)."
+        data_type: tinyint
+
+      - name: dia_semana_numero
+        description: "Dia da semana usando ISO (1 = Segunda-feira, 7 = Domingo)"
+        data_type: tinyint
+
+      - name: nome_mes
+        description: "Nomes dos meses em Português."
+        data_type: varchar
+
+      - name: nome_dia_semana
+        description: "Nome dos dias da semana em Português."
+        data_type: varchar
+
+  - name: fact_abertura_empresas
+    description: "Tabela fato para aberturas de empresas."
+    columns:
+    - name: sk_estabelecimento
+      description: "SK da dim_estabelecimentos"
+      data_type: integer
+      constraints:
+        - type: unique
+        - type: not_null        
+      data_tests:
+        - relationships:
+            to: ref('dim_estabelecimentos')
+            field: sk_id
+
+    - name: sk_tempo_inicio_atividade
+      description: "SK da dim_tempo"
+      data_type: integer
+      constraints:
+        - type: not_null
+      data_tests:
+        - relationships:
+            to: ref('dim_tempo')
+            field: sk_id
+
+    - name: sk_tempo_data_situacao_cadastral
+      description: "SK da dim_tempo"
+      data_type: integer
+      constraints:
+        - type: not_null
+      data_tests:
+        - relationships:
+            to: ref('dim_tempo')
+            field: sk_id
+
+    - name: sk_localizacao
+      description: "SK da dim_localizacao"
+      data_type: integer
+      constraints:
+        - type: not_null
+      data_tests:
+        - relationships:
+            to: ref('dim_localizacao')
+            field: sk_id
+
+    - name: sk_empresa
+      description: "SK da dim_empresas"
+      data_type: varchar
+      constraints:
+        - type: not_null
+      data_tests:
+        - relationships:
+            to: ref('dim_empresas')
+            field: sk_id
+
+    - name: qtd_estabelecimentos
+      description: "Quantidade de estabelecimentos para o SUM()."
+      data_type: smallint
+      constraints:
+        - type: not_null
+
+    - name: qtd_mei
+      description: "Quantidade de estabelecimentos que são MEI para o SUM()."
+      data_type: smallint
+      constraints:
+        - type: not_null
+
+    - name: qtd_ex_mei
+      description: "Quantidade de estabelecimentos que deixaram de ser MEI para o SUM()."
+      data_type: smallint
+      constraints:
+        - type: not_null
+
+    - name: qtd_nao_mei
+      description: "Quantidade de estabelecimentos que não são MEI para o SUM()."
+      data_type: smallint
+      constraints:
+        - type: not_null
+
+    - name: qtd_matrizes
+      description: "Quantidade de estabelecimentos do tipo MATRIZ para o SUM()."
+      data_type: smallint
+      constraints:
+        - type: not_null
+
+    - name: qtd_filiais
+      description: "Quantidade de estabelecimentos do tipo FILIAL para o SUM()."
+      data_type: smallint
+      constraints:
+        - type: not_null
+
+    - name: qtd_ativas
+      description: "Quantidade de estabelecimentos que estão com situação ATIVA para o SUM()."
+      data_type: smallint
+      constraints:
+        - type: not_null
+
+    - name: qtd_suspensas
+      description: "Quantidade de estabelecimentos que estão com situação SUSPENSA para o SUM()."
+      data_type: smallint
+      constraints:
+        - type: not_null
+
+    - name: qtd_baixadas
+      description: "Quantidade de estabelecimentos que estão com situação BAIXADA para o SUM()."
+      data_type: smallint  
+      constraints:
+        - type: not_null
+
+    - name: qtd_nulas
+      description: "Quantidade de estabelecimentos que estão com situação NULA para o SUM()."
+      data_type: smallint  
+      constraints:
+        - type: not_null
+
+    - name: qtd_inaptas
+      description: "Quantidade de estabelecimentos que estão com situação INAPTA para o SUM()."
+      data_type: smallint  
+      constraints:
+        - type: not_null
+
+  - name: bridge_estabelecimentos_cnaes
+    description: "Relação many-to-many entre estabelecimentos e CNAEs"
+    data_type: integer
+    constraints:
+      - type: unique
+        columns: [sk_estabelecimento_id,sk_cnae_id]
+    columns:
+      - name: sk_estabelecimento_id
+        description: "SK do estabelecimento."
+        data_type: integer        
+        data_tests:
+          - relationships:
+              to: ref('dim_estabelecimentos')
+              field: sk_id
+
+      - name: sk_cnae_id
+        description: "SK do CNAE."
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              to: ref('dim_cnaes')
+              field: sk_id
+
+      - name: tipo_cnae
+        description: "PRINCIPAL ou SECUNDÁRIO"
+        data_type: varchar
+        constraints:
+          - type: check
+            expresssions: "tipo_cnae IN ('PRINCIPAL', 'SECUNDÁRIO')"
+ 
+  - name: bridge_estabelecimentos_socios
+    description: "Relação many-to-many entre estabelecimentos e socios."    
+    constraints:
+      - type: unique
+        columns: [sk_estabelecimento_id, sk_socio_id]
+    columns:
+      - name: sk_estabelecimento_id
+        description: "SK do estabelecimento"
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              to: ref('dim_estabelecimentos')
+              field: sk_id
+
+      - name: sk_socio_id
+        description: "SK do socio"
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              to: ref('dim_quadro_societario')
+              field: sk_id
