@@ -286,10 +286,7 @@ models:
         description: "Código do motivo da situação cadastral."
         data_tests:
           - not_null
-        
-#      - name: nome_cidade_exterior
-#        description: "Nome da cidade no exterior (quando aplicável)."
-                
+                          
       - name: pais
         description: "Código do país."
 
