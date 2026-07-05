@@ -37,3 +37,8 @@ models:
       +materialized: table
       +contract:
         enforced: true
+
+    intermediate:
+      +materialized: table
+      +contract:
+        enforced: true    
