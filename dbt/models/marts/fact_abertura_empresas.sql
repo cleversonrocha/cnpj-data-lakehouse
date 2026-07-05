@@ -1,4 +1,4 @@
--- {{ ref('dim_estabelecimentos') }} {{ ref('dim_empresas') }} {{ ref('dim_localizacao') }} {{ ref('dim_tempo') }}  ← comentário que força dependência
+-- {{ ref('dim_tempo') }}  ← comentário que força dependência
 
 {{ config(    
     post_hook=[
@@ -7,24 +7,25 @@
 ) }}
 
 SELECT        
-    es.sk_id AS sk_estabelecimento,
-    COALESCE(CAST(strftime(es.data_inicio_atividade, '%Y%m%d') AS INTEGER),19000101) AS sk_tempo_inicio_atividade,
-    COALESCE(CAST(strftime(data_situacao_cadastral, '%Y%m%d') AS INTEGER),19000101) AS sk_tempo_data_situacao_cadastral,    
-    l.sk_id AS sk_localizacao,  
-    em.sk_id AS sk_empresa,
-    CAST(1 AS SMALLINT) AS qtd_estabelecimentos,
-    CAST(CASE WHEN em.is_mei = 'SIM' THEN 1 ELSE 0 END AS SMALLINT) AS qtd_mei,    
-    CAST(CASE WHEN is_mei = 'NÃO (EX-MEI)' THEN 1 ELSE 0 END AS SMALLINT) AS qtd_ex_mei,
-    CAST(CASE WHEN em.is_mei = 'NÃO' THEN 1 ELSE 0 END AS SMALLINT) AS qtd_nao_mei,
-    CAST(CASE WHEN identificador_matriz_filial = 1 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_matrizes,
-    CAST(CASE WHEN identificador_matriz_filial = 2 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_filiais,
-    CAST(CASE WHEN situacao_cadastral = 2 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_ativas,
-    CAST(CASE WHEN situacao_cadastral = 3 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_suspensas,
-    CAST(CASE WHEN situacao_cadastral = 8 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_baixadas,
-    CAST(CASE WHEN situacao_cadastral = 1 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_nulas,            
-    CAST(CASE WHEN situacao_cadastral = 4 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_inaptas    
+    sk_id,
+    COALESCE(CAST(strftime(es.data_inicio_atividade, '%Y%m%d') AS INTEGER),19000101) AS sk_data_inicio_atividade,
+    COALESCE(CAST(strftime(es.data_situacao_cadastral, '%Y%m%d') AS INTEGER),19000101) AS sk_data_situacao_cadastral,
+    COALESCE(CAST(strftime(es.data_situacao_especial, '%Y%m%d') AS INTEGER),19000101) AS sk_data_situacao_especial,
+    CAST(1 AS SMALLINT) AS qtd_estabelecimentos,    
+    CAST(CASE WHEN es.identificador_matriz_filial = 1 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_matrizes,
+    CAST(CASE WHEN es.identificador_matriz_filial = 2 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_filiais,
+    CAST(CASE WHEN es.situacao_cadastral = 2 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_ativas,
+    CAST(CASE WHEN es.situacao_cadastral = 3 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_suspensas,
+    CAST(CASE WHEN es.situacao_cadastral = 8 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_baixadas,
+    CAST(CASE WHEN es.situacao_cadastral = 1 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_nulas,            
+    CAST(CASE WHEN es.situacao_cadastral = 4 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_inaptas,
+    CAST(CASE WHEN em.porte_empresa = 1 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_porte_micro,
+    CAST(CASE WHEN em.porte_empresa = 3 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_porte_pequeno,
+    CAST(CASE WHEN em.porte_empresa = 5 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_porte_demais,
+    CAST(CASE WHEN em.porte_empresa = 0 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_nao_informado,
+    CAST(CASE WHEN s.opcao_mei = 'S' AND s.data_exclusao_mei IS NULL THEN 1 ELSE 0 END AS SMALLINT) AS qtd_mei,
+    cast(CASE WHEN s.opcao_mei = 'S' AND s.data_exclusao_mei IS NOT NULL THEN 1 ELSE 0 END AS SMALLINT) AS qtd_ex_mei,
+    CAST(CASE WHEN s.opcao_mei = 'N' THEN 1 ELSE 0 END AS SMALLINT) AS qtd_nao_mei
 FROM {{ get_s3_path(base_path='silver/cleaned', file_name='estabelecimentos') }} es
-JOIN {{ ref('dim_empresas') }} em ON em.sk_id = es.cnpj_basico
-JOIN {{ ref('dim_localizacao') }} l ON l.uf = es.uf AND 
-                                       l.desc_municipio = es.desc_municipio AND                                        
-                                       l.pais = es.pais
+JOIN {{ get_s3_path(base_path='silver/cleaned', file_name='empresas') }} em ON em.cnpj_basico = es.cnpj_basico
+LEFT JOIN {{ get_s3_path(base_path='silver/cleaned', file_name='simples') }} s ON s.cnpj_basico = em.cnpj_basico
