@@ -9,11 +9,14 @@ cnpj_data_lakehouse:
       extensions:
         - httpfs
         - aws
-                  
-      settings:        
-        max_memory: '16GB'
-        memory_limit: '16GB'        
-        temp_directory: '/opt/airflow/temp/tmp_duckdb'        
+
+      config_options:
+        temp_directory: '/opt/airflow/temp/tmp_duckdb'
+
+      settings:
+        max_memory: '12GB'
+        memory_limit: '12GB'
+        max_temp_directory_size: '100GB'
         preserve_insertion_order: false
         s3_url_style: 'path'
         s3_endpoint: 'minio:9000'
