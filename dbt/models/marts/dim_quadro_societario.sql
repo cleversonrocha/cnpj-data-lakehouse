@@ -32,7 +32,7 @@ SELECT
         WHEN 9 THEN 'maiores de 80 anos' 
         WHEN 0 THEN 'não se aplica'        
     END as faixa_etaria_socio    
-FROM {{ get_s3_path(base_path='silver/cleaned', file_name='socios') }} s
-JOIN {{ get_s3_path(base_path='silver/cleaned', file_name='qualificacoes') }} qs ON qs.codigo = s.qualificacao 
-JOIN {{ get_s3_path(base_path='silver/cleaned', file_name='qualificacoes') }} qr ON qr.codigo = s.qualificacao_representante
-LEFT JOIN {{ get_s3_path(base_path='silver/cleaned', file_name='paises') }} p ON p.codigo = s.pais
+FROM {{ ref('stg_socios') }} s
+JOIN {{ ref('stg_qualificacoes') }} qs ON qs.codigo = s.qualificacao 
+JOIN {{ ref('stg_qualificacoes') }} qr ON qr.codigo = s.qualificacao_representante
+LEFT JOIN {{ ref('stg_paises') }} p ON p.codigo = s.pais

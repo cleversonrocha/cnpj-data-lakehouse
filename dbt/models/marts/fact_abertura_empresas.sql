@@ -26,6 +26,6 @@ SELECT
     CAST(CASE WHEN s.opcao_mei = 'S' AND s.data_exclusao_mei IS NULL THEN 1 ELSE 0 END AS SMALLINT) AS qtd_mei,
     cast(CASE WHEN s.opcao_mei = 'S' AND s.data_exclusao_mei IS NOT NULL THEN 1 ELSE 0 END AS SMALLINT) AS qtd_ex_mei,
     CAST(CASE WHEN s.opcao_mei = 'N' THEN 1 ELSE 0 END AS SMALLINT) AS qtd_nao_mei
-FROM {{ get_s3_path(base_path='silver/cleaned', file_name='estabelecimentos') }} es
-JOIN {{ get_s3_path(base_path='silver/cleaned', file_name='empresas') }} em ON em.cnpj_basico = es.cnpj_basico
-LEFT JOIN {{ get_s3_path(base_path='silver/cleaned', file_name='simples') }} s ON s.cnpj_basico = em.cnpj_basico
+FROM {{ ref('stg_estabelecimentos') }} es
+JOIN {{ ref('stg_empresas') }} em ON em.cnpj_basico = es.cnpj_basico
+LEFT JOIN {{ ref('stg_simples') }} s ON s.cnpj_basico = em.cnpj_basico

@@ -1,4 +1,4 @@
--- {{ ref('dim_cnaes') }} ← comentário que força dependência
+-- {{ ref('dim_cnaes') }} ref('int_cnaes_principais') }} ← comentário que força dependência
 
 {{ config(    
     post_hook=[
@@ -14,7 +14,7 @@ FROM (
     SELECT         
         sk_id AS sk_estabelecimento_id,        
         UNNEST(list_distinct(string_split(cnae_fiscal_secundaria, ','))) AS cnae_codigo
-    FROM {{ get_s3_path(base_path='silver/cleaned', file_name='estabelecimentos') }} E
+    FROM {{ ref('stg_estabelecimentos') }} E
     WHERE cnae_fiscal_secundaria IS NOT NULL
 ) AS cs
 JOIN {{ ref('dim_cnaes') }} c ON c.codigo = cs.cnae_codigo

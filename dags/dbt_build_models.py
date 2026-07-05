@@ -19,13 +19,9 @@ def dbt_build_models():
     #ano_mes = pendulum.now("America/Sao_Paulo").format("YYYY_MM")
 
     @task.bash
-    def dbt_build_stg(ano_mes: str) -> str:      
-        return f'cd /opt/airflow/dbt && dbt build --select staging --vars \'{{"ano_mes": "{ano_mes}"}}\''
-    
-    @task.bash
-    def dbt_build_dim(ano_mes: str) -> str:
-        return f'cd /opt/airflow/dbt && dbt build --select marts --vars \'{{\"ano_mes\": \"{ano_mes}\"}}\''     
-        
+    def dbt_build(ano_mes: str) -> str:      
+        return f'cd /opt/airflow/dbt && dbt build --select staging marts intermediate --vars \'{{"ano_mes": "{ano_mes}"}}\''    
+            
     @task
     def upload_minio_to_databricks_volume(ano_mes: str):
         try:            
@@ -50,7 +46,7 @@ def dbt_build_models():
             raise AirflowException(f"Erro ao configurar os clientes: {e}")         
 
         BUCKET_PRINCIPAL = "gold"
-        subpastas_gold = ["bridge", "dim", "fact"]
+        subpastas_gold = ["bridge", "dim", "fact", "int"]
 
         for pasta in subpastas_gold:
             PREFIXO_CAMINHO = f"{pasta}/{ano_mes}/"
@@ -76,11 +72,10 @@ def dbt_build_models():
                     nome_arquivo_final = file_key.split('/')[-1]
                     caminho_final_databricks = f"{TARGET_VOLUME_PATH}/{nome_arquivo_final}"
 
-                    print(f"📦 A iniciar Upload Streaming Direto via Databricks SDK: {nome_arquivo_final}")
+                    print(f"📦 Iniciando Upload Streaming Direto via Databricks SDK: {nome_arquivo_final}")
 
-                    minio_response = s3_client.get_object(Bucket=BUCKET_PRINCIPAL, Key=file_key)                    
+                    minio_response = s3_client.get_object(Bucket=BUCKET_PRINCIPAL, Key=file_key)                                        
                     
-                    # O SDK Databricks consome o minio_stream e trata o "multipart upload" internamente
                     with minio_response['Body'] as minio_stream:
                         w.files.upload(caminho_final_databricks, minio_stream, overwrite=True)
 
@@ -91,6 +86,6 @@ def dbt_build_models():
 
         print("🚀 Todos os ficheiros da camada Gold (incluindo os maiores de 5GB) foram sincronizados!")
     
-    dbt_build_stg(ano_mes) >> dbt_build_dim(ano_mes) >> upload_minio_to_databricks_volume(ano_mes)
+    dbt_build(ano_mes) >> upload_minio_to_databricks_volume(ano_mes)
 
 dag_execucao = dbt_build_models()

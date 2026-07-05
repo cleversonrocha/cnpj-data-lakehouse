@@ -60,9 +60,9 @@ SELECT
         -- Casos onde não há informação no bloco do Simples
         ELSE 'NÃO INFORMADO'
     END AS is_mei
-FROM {{ get_s3_path(base_path='silver/cleaned', file_name='estabelecimentos') }} es
-JOIN {{ get_s3_path(base_path='silver/cleaned', file_name='empresas') }} em ON em.cnpj_basico = es.cnpj_basico
-JOIN {{ get_s3_path(base_path='silver/cleaned', file_name='naturezas') }} n ON n.codigo = em.natureza_juridica    
-LEFT JOIN {{ get_s3_path(base_path='silver/cleaned', file_name='motivos') }} mo ON mo.codigo = es.motivo_situacao_cadastral
-LEFT JOIN {{ get_s3_path(base_path='silver/cleaned', file_name='qualificacoes') }} q ON q.codigo = em.qualificacao_responsavel
-LEFT JOIN {{ get_s3_path(base_path='silver/cleaned', file_name='simples') }} s ON s.cnpj_basico = em.cnpj_basico
+FROM {{ ref('stg_estabelecimentos') }} es
+JOIN {{ ref('stg_empresas') }} em ON em.cnpj_basico = es.cnpj_basico
+JOIN {{ ref('stg_naturezas') }} n ON n.codigo = em.natureza_juridica    
+LEFT JOIN {{ ref('stg_motivos') }} mo ON mo.codigo = es.motivo_situacao_cadastral
+LEFT JOIN {{ ref('stg_qualificacoes') }} q ON q.codigo = em.qualificacao_responsavel
+LEFT JOIN {{ ref('stg_simples') }} s ON s.cnpj_basico = em.cnpj_basico

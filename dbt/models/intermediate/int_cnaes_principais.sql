@@ -10,5 +10,5 @@ SELECT
     e.sk_id AS sk_estabelecimento_id,
     c.sk_id AS sk_cnae_id,
     'PRINCIPAL' AS tipo_cnae
-FROM {{ get_s3_path(base_path='silver/cleaned', file_name='estabelecimentos') }} e
+FROM {{ ref('stg_estabelecimentos') }} e
 JOIN {{ ref('dim_cnaes') }} c ON c.codigo = e.cnae_fiscal_principal
