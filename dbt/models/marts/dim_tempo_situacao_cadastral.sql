@@ -1,24 +1,26 @@
 {{ config(    
     post_hook=[        
-        export_to_s3(bucket_path='gold/dim', file_name='dim_tempo')
+        export_to_s3(bucket_path='gold/dim', file_name='dim_tempo_situacao_cadastral')
     ]
 ) }}
 
 WITH date_spine AS (
     -- No DuckDB, generate_series é uma função de tabela nativa e super rápida
     SELECT CAST(generate_series AS DATE) AS data_referencia
-    FROM generate_series(DATE '1891-01-01', DATE '2026-12-31', INTERVAL '1 day')
+    FROM generate_series((SELECT MIN(data_situacao_cadastral) FROM {{ ref('stg_estabelecimentos') }} WHERE data_situacao_cadastral IS NOT NULL), 
+                         (SELECT MAX(data_situacao_cadastral) FROM {{ ref('stg_estabelecimentos') }} WHERE data_situacao_cadastral IS NOT NULL),
+                         INTERVAL '1 day')
 ),
 
 dim_tempo_enriquecida AS (
     SELECT
         -- O DuckDB possui STRFTIME, o que deixa a criação do ID numérico muito mais limpa e performática
         CAST(STRFTIME(data_referencia, '%Y%m%d') AS INTEGER) AS sk_id,
-             
+        data_referencia,
         CAST(EXTRACT(YEAR FROM data_referencia) AS SMALLINT) AS ano,
         CAST(EXTRACT(MONTH FROM data_referencia) AS TINYINT) AS mes,
         CAST(EXTRACT(DAY FROM data_referencia) AS TINYINT) AS dia,
-        CAST(EXTRACT(QUARTER FROM data_referencia) AS TINYINT) AS trimestre,
+        CAST(EXTRACT(QUARTER FROM data_referencia) AS TINYINT) AS trimestre,    
         
         -- Semestre
         CAST(
@@ -54,3 +56,17 @@ dim_tempo_enriquecida AS (
 )
 
 SELECT * FROM dim_tempo_enriquecida
+
+UNION ALL
+
+SELECT 
+    0 AS sk_id,
+    CAST(NULL AS DATE) AS data_referencia,
+    CAST(NULL AS SMALLINT) AS ano,
+    CAST(NULL AS TINYINT) AS mes,
+    CAST(NULL AS TINYINT) AS dia,
+    CAST(NULL AS TINYINT) AS trimestre,
+    CAST(NULL AS TINYINT) AS semestre,
+    CAST(NULL AS TINYINT) AS dia_semana_numero,
+    'Não informado' AS nome_mes,
+    'Não informado' AS nome_dia_semana
