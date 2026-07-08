@@ -14,7 +14,7 @@ FROM (
     SELECT         
         sk_id AS sk_estabelecimento_id,        
         UNNEST(list_distinct(string_split(cnae_fiscal_secundaria, ','))) AS cnae_codigo
-    FROM {{ ref('stg_estabelecimentos') }} E
+    FROM {{ ref('stg_estabelecimentos') }}
     WHERE cnae_fiscal_secundaria IS NOT NULL
 ) AS cs
 JOIN {{ ref('dim_cnaes') }} c ON c.codigo = cs.cnae_codigo

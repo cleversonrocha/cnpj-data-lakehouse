@@ -7,7 +7,7 @@
 ) }}
 
 SELECT        
-    sk_id,
+    es.sk_id,
     COALESCE(CAST(strftime(es.data_inicio_atividade, '%Y%m%d') AS INTEGER),0) AS sk_data_inicio_atividade,
     COALESCE(CAST(strftime(es.data_situacao_cadastral, '%Y%m%d') AS INTEGER),0) AS sk_data_situacao_cadastral,
     COALESCE(CAST(strftime(es.data_situacao_especial, '%Y%m%d') AS INTEGER),0) AS sk_data_situacao_especial,

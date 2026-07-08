@@ -5,7 +5,7 @@
 ) }}
 
 SELECT
-    sk_id,
+    es.sk_id,
     es.cnpj_basico,    
     SUBSTR(es.cnpj_basico, 1, 2) || '.' || SUBSTR(es.cnpj_basico, 3, 3) || '.' || SUBSTR(es.cnpj_basico, 6, 3) || '/' || cnpj_ordem || '-' || cnpj_dv AS cnpj_completo,
     CASE identificador_matriz_filial
