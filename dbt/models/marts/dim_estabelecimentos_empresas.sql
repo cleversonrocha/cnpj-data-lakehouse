@@ -6,9 +6,8 @@
 
 SELECT
     sk_id,
-    es.cnpj_basico, 
-    cnpj_ordem,
-    cnpj_dv,        
+    es.cnpj_basico,    
+    SUBSTR(es.cnpj_basico, 1, 2) || '.' || SUBSTR(es.cnpj_basico, 3, 3) || '.' || SUBSTR(es.cnpj_basico, 6, 3) || '/' || cnpj_ordem || '-' || cnpj_dv AS cnpj_completo,
     CASE identificador_matriz_filial
         WHEN 1 THEN 'MATRIZ'
         WHEN 2 THEN 'FILIAL'        
@@ -26,18 +25,47 @@ SELECT
     uf,        
     desc_municipio,    
     desc_pais,
-    tipo_logradouro,
-    logradouro,    
+    tipo_logradouro || ' ' || logradouro AS logradouro,    
     numero,    
     complemento,
     bairro,
-    cep,
-    ddd_1,
-    telefone_1,
-    ddd_2,
-    telefone_2,
-    ddd_fax,
-    fax,
+    CASE 
+        WHEN cep IS NULL THEN cep
+        ELSE SUBSTR(cep, 1, 5) || '-' || SUBSTR(cep, 6, 3)
+    END AS cep,
+    CASE 
+        WHEN ddd_1 IS NULL OR telefone_1 IS NULL THEN NULL
+        ELSE '(' || ddd_1 || ') ' || 
+            CASE 
+                WHEN LENGTH(REGEXP_REPLACE(telefone_1, '\D', '', 'g')) = 9            
+                    THEN REGEXP_REPLACE(REGEXP_REPLACE(telefone_1, '\D', '', 'g'), '^(\d{5})(\d{4})$', '\1-\2')
+                WHEN LENGTH(REGEXP_REPLACE(telefone_1, '\D', '', 'g')) = 8             
+                    THEN REGEXP_REPLACE(REGEXP_REPLACE(telefone_1, '\D', '', 'g'), '^(\d{4})(\d{4})$', '\1-\2')
+                ELSE telefone_1
+            END
+    END AS telefone_1,
+    CASE 
+        WHEN ddd_2 IS NULL OR telefone_2 IS NULL THEN NULL
+        ELSE '(' || ddd_2 || ') ' || 
+            CASE 
+                WHEN LENGTH(REGEXP_REPLACE(telefone_2, '\D', '', 'g')) = 9            
+                    THEN REGEXP_REPLACE(REGEXP_REPLACE(telefone_2, '\D', '', 'g'), '^(\d{5})(\d{4})$', '\1-\2')
+                WHEN LENGTH(REGEXP_REPLACE(telefone_2, '\D', '', 'g')) = 8             
+                    THEN REGEXP_REPLACE(REGEXP_REPLACE(telefone_2, '\D', '', 'g'), '^(\d{4})(\d{4})$', '\1-\2')
+                ELSE telefone_2
+            END
+    END AS telefone_2,
+    CASE 
+        WHEN ddd_fax IS NULL OR fax IS NULL THEN NULL
+        ELSE '(' || ddd_fax || ') ' || 
+            CASE 
+                WHEN LENGTH(REGEXP_REPLACE(fax, '\D', '', 'g')) = 9             
+                    THEN REGEXP_REPLACE(REGEXP_REPLACE(fax, '\D', '', 'g'), '^(\d{5})(\d{4})$', '\1-\2')
+                WHEN LENGTH(REGEXP_REPLACE(fax, '\D', '', 'g')) = 8             
+                    THEN REGEXP_REPLACE(REGEXP_REPLACE(fax, '\D', '', 'g'), '^(\d{4})(\d{4})$', '\1-\2')
+                ELSE fax
+            END
+    END AS fax,  
     email,     
     razao_social,
     CASE porte_empresa
@@ -46,8 +74,15 @@ SELECT
     	WHEN 3 THEN 'EMPRESA DE PEQUENO PORTE'
     	WHEN 5 THEN 'DEMAIS'    	
     END AS porte,
+    CASE porte_empresa
+    	WHEN 0 THEN 'NÃO INFORMADO'
+    	WHEN 1 THEN 'ME'
+    	WHEN 3 THEN 'EPP'
+    	WHEN 5 THEN 'DEMAIS'
+    END AS porte_sigla,    
     ente_federativo_responsavel,         
     capital_social,
+    n.codigo_formatado AS codigo_natureza_juridica,
     n.descricao AS natureza_juridica,
     q.descricao AS qualificacao_responsavel,
     CASE
