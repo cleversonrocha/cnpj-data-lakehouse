@@ -1,4 +1,4 @@
--- {{ ref('dim_tempo') }}  ← comentário que força dependência
+-- {{ ref('dim_tempo_inicio_atividade') }} {{ ref('dim_tempo_situacao_cadastral') }} {{ ref('dim_tempo_situacao_especial') }}  ← comentário que força dependência
 
 {{ config(    
     post_hook=[
@@ -8,10 +8,10 @@
 
 SELECT        
     sk_id,
-    COALESCE(CAST(strftime(es.data_inicio_atividade, '%Y%m%d') AS INTEGER),19000101) AS sk_data_inicio_atividade,
-    COALESCE(CAST(strftime(es.data_situacao_cadastral, '%Y%m%d') AS INTEGER),19000101) AS sk_data_situacao_cadastral,
-    COALESCE(CAST(strftime(es.data_situacao_especial, '%Y%m%d') AS INTEGER),19000101) AS sk_data_situacao_especial,
-    CAST(1 AS SMALLINT) AS qtd_estabelecimentos,    
+    COALESCE(CAST(strftime(es.data_inicio_atividade, '%Y%m%d') AS INTEGER),0) AS sk_data_inicio_atividade,
+    COALESCE(CAST(strftime(es.data_situacao_cadastral, '%Y%m%d') AS INTEGER),0) AS sk_data_situacao_cadastral,
+    COALESCE(CAST(strftime(es.data_situacao_especial, '%Y%m%d') AS INTEGER),0) AS sk_data_situacao_especial,
+    CAST(1 AS SMALLINT) AS qtd_estabelecimentos,
     CAST(CASE WHEN es.identificador_matriz_filial = 1 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_matrizes,
     CAST(CASE WHEN es.identificador_matriz_filial = 2 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_filiais,
     CAST(CASE WHEN es.situacao_cadastral = 2 THEN 1 ELSE 0 END AS SMALLINT) AS qtd_ativas,
