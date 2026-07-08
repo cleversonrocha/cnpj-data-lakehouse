@@ -1,4 +1,4 @@
--- {{ ref('dim_quadro_societario') }} ← comentário que força dependência
+-- {{ ref('dim_estabelecimentos_empresas') }} {{ ref('stg_socios') }} ← comentário que força dependência
 
 {{ config(    
     post_hook=[
@@ -7,5 +7,8 @@
 ) }}
 
 SELECT
-    DISTINCT cnpj_basico
-FROM {{ ref('dim_quadro_societario') }}
+    es.sk_id AS sk_estabelecimento_id,
+    qs.sk_id AS sk_socio_id,
+    COALESCE(CAST(STRFTIME(data_entrada_sociedade, '%Y%m%d') AS INTEGER), 0) AS sk_data_entrada_sociedade
+FROM {{ ref('dim_estabelecimentos_empresas') }} es
+JOIN {{ ref('stg_socios') }} qs ON qs.cnpj_basico = es.cnpj_basico

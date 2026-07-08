@@ -19,13 +19,20 @@ models:
           - type: unique
           - type: not_null
 
+      - name: codigo_formatado
+        description: "Código CNAE formatado"
+        data_type: varchar
+        constraints:
+          - type: unique
+          - type: not_null
+
       - name: descricao
         description: "Descrição da atividade econômica."
         data_type: varchar
         constraints:
           - type: not_null
 
-  - name: dim_tempo
+  - name: dim_tempo_inicio_atividade
     description: "Dimensão de tempo agregada a nível mensal, gerada a partir das datas de início de atividade dos estabelecimentos."
     columns:
       - name: sk_id
@@ -35,6 +42,148 @@ models:
           - type: unique
           - type: not_null
 
+      - name: data_referencia
+        description: "Data de referência correspondente à chave substituta."        
+        data_type: date
+        
+      - name: ano
+        description: "Ano correspondente à data."
+        data_type: smallint
+
+      - name: mes
+        description: "Número do mês (1 a 12)."
+        data_type: tinyint
+
+      - name: dia
+        description: "Número do dia (1 a 31)."
+        data_type: tinyint
+
+      - name: trimestre
+        description: "Número do trimestre do ano (1 a 4)."
+        data_type: tinyint
+
+      - name: semestre
+        description: "Número do semestre do ano (1 ou 2)."
+        data_type: tinyint
+
+      - name: dia_semana_numero
+        description: "Dia da semana usando ISO (1 = Segunda-feira, 7 = Domingo)"
+        data_type: tinyint
+
+      - name: nome_mes
+        description: "Nomes dos meses em Português."
+        data_type: varchar
+
+      - name: nome_dia_semana
+        description: "Nome dos dias da semana em Português."
+        data_type: varchar
+
+  - name: dim_tempo_situacao_cadastral
+    description: "Dimensão de tempo agregada a nível mensal, gerada a partir das datas da situação cadastral dos estabelecimentos."
+    columns:
+      - name: sk_id
+        description: "Chave substituta (Surrogate Key) da dimensão tempo, formatada como número inteiro (YYYYMMDD)."
+        data_type: integer  
+        constraints:
+          - type: unique
+          - type: not_null
+
+      - name: data_referencia
+        description: "Data de referência correspondente à chave substituta."        
+        data_type: date
+        
+      - name: ano
+        description: "Ano correspondente à data."
+        data_type: smallint
+
+      - name: mes
+        description: "Número do mês (1 a 12)."
+        data_type: tinyint
+
+      - name: dia
+        description: "Número do dia (1 a 31)."
+        data_type: tinyint
+
+      - name: trimestre
+        description: "Número do trimestre do ano (1 a 4)."
+        data_type: tinyint
+
+      - name: semestre
+        description: "Número do semestre do ano (1 ou 2)."
+        data_type: tinyint
+
+      - name: dia_semana_numero
+        description: "Dia da semana usando ISO (1 = Segunda-feira, 7 = Domingo)"
+        data_type: tinyint
+
+      - name: nome_mes
+        description: "Nomes dos meses em Português."
+        data_type: varchar
+
+      - name: nome_dia_semana
+        description: "Nome dos dias da semana em Português."
+        data_type: varchar
+
+  - name: dim_tempo_situacao_especial
+    description: "Dimensão de tempo agregada a nível mensal, gerada a partir das datas de situação especial dos estabelecimentos."
+    columns:
+      - name: sk_id
+        description: "Chave substituta (Surrogate Key) da dimensão tempo, formatada como número inteiro (YYYYMMDD)."
+        data_type: integer  
+        constraints:
+          - type: unique
+          - type: not_null
+
+      - name: data_referencia
+        description: "Data de referência correspondente à chave substituta."        
+        data_type: date
+        
+      - name: ano
+        description: "Ano correspondente à data."
+        data_type: smallint
+
+      - name: mes
+        description: "Número do mês (1 a 12)."
+        data_type: tinyint
+
+      - name: dia
+        description: "Número do dia (1 a 31)."
+        data_type: tinyint
+
+      - name: trimestre
+        description: "Número do trimestre do ano (1 a 4)."
+        data_type: tinyint
+
+      - name: semestre
+        description: "Número do semestre do ano (1 ou 2)."
+        data_type: tinyint
+
+      - name: dia_semana_numero
+        description: "Dia da semana usando ISO (1 = Segunda-feira, 7 = Domingo)"
+        data_type: tinyint
+
+      - name: nome_mes
+        description: "Nomes dos meses em Português."
+        data_type: varchar
+
+      - name: nome_dia_semana
+        description: "Nome dos dias da semana em Português."
+        data_type: varchar
+
+  - name: dim_tempo_entrada_sociedade
+    description: "Dimensão de tempo agregada a nível mensal, gerada a partir das datas de entrada em sociedade dos sócios."
+    columns:
+      - name: sk_id
+        description: "Chave substituta (Surrogate Key) da dimensão tempo, formatada como número inteiro (YYYYMMDD)."
+        data_type: integer  
+        constraints:
+          - type: unique
+          - type: not_null
+
+      - name: data_referencia
+        description: "Data de referência correspondente à chave substituta."        
+        data_type: date
+        
       - name: ano
         description: "Ano correspondente à data."
         data_type: smallint
@@ -97,12 +246,7 @@ models:
       - name: qualificacao_socio
         data_type: varchar
         constraints:
-          - type: not_null
-
-      - name: data_entrada_sociedade
-        data_type: date
-        constraints:
-          - type: not_null
+          - type: not_null      
 
       - name: pais_socio
         data_type: varchar
@@ -148,12 +292,8 @@ models:
         description: "Oito primeiros digítos do CNPJ."
         data_type: varchar
         
-      - name: cnpj_ordem
-        description: "Ordem do CNPJ."
-        data_type: varchar
-
-      - name: cnpj_dv
-        description: "Digíto verificador do CNPJ."
+      - name: cnpj_completo
+        description: "CNPJ completo do estabelecimento, formatado como XX.XXX.XXX/YYYY-ZZ."
         data_type: varchar
 
       - name: tipo_estabelecimento
@@ -198,9 +338,6 @@ models:
         description: "Nome descritivo do município. Para casos internacionais, armazena o nome da cidade no exterior."
         data_type: varchar
 
-      - name: tipo_logradouro
-        data_type: varchar
-
       - name: logradouro
         data_type: varchar
 
@@ -215,20 +352,11 @@ models:
 
       - name: cep
         data_type: varchar
-
-      - name: ddd_1
-        data_type: varchar
-
+      
       - name: telefone_1
         data_type: varchar
 
-      - name: ddd_2
-        data_type: varchar
-
       - name: telefone_2
-        data_type: varchar
-
-      - name: ddd_fax
         data_type: varchar
 
       - name: fax
@@ -250,6 +378,13 @@ models:
           - type: check
             expression: "porte IN ('NÃO INFORMADO', 'MICRO EMPRESA', 'EMPRESA DE PEQUENO PORTE', 'DEMAIS')"
 
+      - name: porte_sigla
+        description: "Sigla do porte da empresa."
+        data_type: varchar
+        constraints:
+          - type: check
+            expression: "porte_sigla IN ('NÃO INFORMADO', 'ME', 'EPP', 'DEMAIS')"
+
       - name: ente_federativo_responsavel
         description: "Ente federativo responsável, aplicável geralmente a órgãos e entidades da administração pública."
         data_type: varchar
@@ -257,6 +392,10 @@ models:
       - name: capital_social
         description: "Valor correspondente ao capital social da empresa."
         data_type: decimal(15,2)
+
+      - name: codigo_natureza_juridica
+        description: "Código da natureza jurídica da empresa."
+        data_type: varchar
 
       - name: natureza_juridica
         description: "Descrição da natureza jurídica da empresa."
@@ -281,19 +420,21 @@ models:
         data_type: integer
         constraints:
           - type: unique
-          - type: not_null
-        relationships:
-          - arguments:
-              to: ref('dim_estabelecimentos_empresas')
-              field: sk_id
+          - type: not_null        
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_estabelecimentos_empresas')
+                field: sk_id
 
       - name: sk_cnae_id
         description: "SK do CNAE."        
         data_type: integer
-        relationships:
-          - arguments:
-              to: ref('dim_cnaes')
-              field: sk_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_cnaes')
+                field: sk_id
         constraints:
           - type: not_null
 
@@ -311,19 +452,21 @@ models:
         description: "SK do estabelecimento."
         data_type: integer
         constraints:          
-          - type: not_null
-        relationships:
-          - arguments:
-              to: ref('dim_estabelecimentos_empresas')
-              field: sk_id
+          - type: not_null        
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_estabelecimentos_empresas')
+                field: sk_id
 
       - name: sk_cnae_id
         description: "SK do CNAE."  
         data_type: integer
-        relationships:
-          - arguments:
-              to: ref('dim_cnaes')
-              field: sk_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_cnaes')
+                field: sk_id
         constraints:
           - type: not_null
 
@@ -335,15 +478,16 @@ models:
             expression: "tipo_cnae IN ('SECUNDÁRIO')"
 
   - name: bridge_estabelecimentos_cnaes
-    description: "Relação many-to-many entre estabelecimentos e CNAEs"
-    data_type: integer
+    description: "Relação many-to-many entre estabelecimentos e CNAEs"    
     constraints:
       - type: unique
         columns: [sk_estabelecimento_id,sk_cnae_id]
     columns:    
       - name: sk_estabelecimento_id
         description: "SK do estabelecimento."
-        data_type: integer        
+        data_type: integer
+        constraints:
+          - type: not_null        
         data_tests:
           - relationships:
               arguments:
@@ -369,14 +513,43 @@ models:
             expression: "tipo_cnae IN ('PRINCIPAL', 'SECUNDÁRIO')"              
 
   - name: bridge_empresas_socios
-    description: "Relação many-to-many entre dim_estabelecimentos_empresas e dim_quadro_societario."        
+    description: "Relação many-to-many entre dim_estabelecimentos_empresas e dim_quadro_societario, no grão de estabelecimento."        
+    constraints:
+      - type: unique
+        columns: [sk_estabelecimento_id, sk_socio_id]
     columns:
-      - name: cnpj_basico
-        description: "CNPJ básico do estabelecimento."        
-        data_type: varchar
+      - name: sk_estabelecimento_id
+        description: "SK do estabelecimento."
+        data_type: integer
         constraints:
-          - type: unique
           - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_estabelecimentos_empresas')
+                field: sk_id
+
+      - name: sk_socio_id
+        description: "SK do sócio."
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_quadro_societario')
+                field: sk_id
+
+      - name: sk_data_entrada_sociedade
+        description: "SK da dim_tempo_entrada_sociedade"
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_tempo_entrada_sociedade')
+                field: sk_id
 
   - name: fact_abertura_empresas
     description: "Tabela fato para aberturas de empresas."
@@ -396,7 +569,7 @@ models:
       data_tests:
         - relationships:
             arguments:
-              to: ref('dim_tempo')
+              to: ref('dim_tempo_inicio_atividade')
               field: sk_id
 
     - name: sk_data_situacao_cadastral
@@ -407,7 +580,7 @@ models:
       data_tests:
         - relationships:
             arguments:
-              to: ref('dim_tempo')
+              to: ref('dim_tempo_situacao_cadastral')
               field: sk_id
 
     - name: sk_data_situacao_especial
@@ -418,7 +591,7 @@ models:
       data_tests:
         - relationships:
             arguments:
-              to: ref('dim_tempo')
+              to: ref('dim_tempo_situacao_especial')
               field: sk_id
 
     - name: qtd_estabelecimentos
