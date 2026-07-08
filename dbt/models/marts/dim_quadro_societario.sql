@@ -5,7 +5,7 @@
 ) }}
 
 SELECT
-    CAST(ROW_NUMBER() OVER() AS INTEGER) AS sk_id,
+    s.sk_id,
     s.cnpj_basico,
     CASE s.identificador    	
         WHEN 1 THEN 'PESSOA FÍSICA'
