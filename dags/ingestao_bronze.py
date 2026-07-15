@@ -14,7 +14,7 @@ logger = logging.getLogger("airflow.task")
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
 MINIO_USER = os.getenv("MINIO_ROOT_USER")
 MINIO_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD")
-MINIO_BUCKET_BRONZE = os.getenv("MINIO_BUCKET_BRONZE")
+MINIO_BUCKET_BRONZE = 'bronze'
 
 @dag(
     dag_id="ingestao_bronze",
@@ -28,7 +28,7 @@ def rfb_datalake_ingestion():
     @task
     def gerar_link_dinamico() -> str:
         
-        """Gera o link dinâmico baseado no mês atual (Junho de 2026)."""
+        """Gera o link dinâmico baseado no mês atual."""
         data_execucao = pendulum.now("America/Sao_Paulo")
         ano_mes_pasta = data_execucao.format("YYYY-MM")
         url_direta = f"https://arquivos.receitafederal.gov.br/public.php/dav/files/YggdBLfdninEJX9/{ano_mes_pasta}/?accept=zip"                       
