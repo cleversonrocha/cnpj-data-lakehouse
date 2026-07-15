@@ -23,7 +23,7 @@ def dbt_build_models():
         return f'cd /opt/airflow/dbt && dbt build --select staging marts intermediate --vars \'{{"ano_mes": "{ano_mes}"}}\''    
             
     @task
-    def upload_minio_to_databricks_volume(ano_mes: str):
+    def upload_minio_to_databricks_volume(schema: str,volumes: list, ano_mes: str):
         try:            
             endpoint = os.getenv("MINIO_ENDPOINT")
             user = os.getenv("MINIO_ROOT_USER")
@@ -37,18 +37,19 @@ def dbt_build_models():
             )
 
             DATABRICKS_HOST = os.getenv("DATABRICKS_HOST")
-            DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN")
-            TARGET_VOLUME_PATH = os.getenv("TARGET_VOLUME_PATH")
+            DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN")            
+            DATABRICKS_CATALOG = "cnpj_data_lakehouse"
+            DATABRICKS_SCHEMA = schema
                         
             w = WorkspaceClient(host=DATABRICKS_HOST, token=DATABRICKS_TOKEN)
 
         except Exception as e:
             raise AirflowException(f"Erro ao configurar os clientes: {e}")         
 
-        BUCKET_PRINCIPAL = "gold"
-        subpastas_gold = ["bridge", "dim", "fact", "int"]
+        BUCKET_PRINCIPAL = schema
+        subpastas = volumes
 
-        for pasta in subpastas_gold:
+        for pasta in subpastas:
             PREFIXO_CAMINHO = f"{pasta}/{ano_mes}/"
             print(f"--- A iniciar extração do MinIO: {PREFIXO_CAMINHO} ---")
                         
@@ -68,9 +69,10 @@ def dbt_build_models():
                     
                     if file_key.endswith('_SUCCESS') or file_key.endswith('/'):
                         continue
-                        
+                    
+                    DATABRICKS_VOLUME = pasta
                     nome_arquivo_final = file_key.split('/')[-1]
-                    caminho_final_databricks = f"{TARGET_VOLUME_PATH}/{nome_arquivo_final}"
+                    caminho_final_databricks = f"/Volumes/{DATABRICKS_CATALOG}/{DATABRICKS_SCHEMA}/{DATABRICKS_VOLUME}/{nome_arquivo_final}"
 
                     print(f"📦 Iniciando Upload Streaming Direto via Databricks SDK: {nome_arquivo_final}")
 
@@ -86,6 +88,6 @@ def dbt_build_models():
 
         print("🚀 Todos os ficheiros da camada Gold (incluindo os maiores de 5GB) foram sincronizados!")
     
-    dbt_build(ano_mes) >> upload_minio_to_databricks_volume(ano_mes)
+    dbt_build(ano_mes) >> upload_minio_to_databricks_volume('bronze',['raw'],ano_mes) >> upload_minio_to_databricks_volume('silver',['raw','cleaned'],ano_mes) >> upload_minio_to_databricks_volume('gold',["bridge", "dim", "fact", "int"],ano_mes)
 
 dag_execucao = dbt_build_models()
