@@ -60,7 +60,7 @@ SELECT * FROM dim_tempo_enriquecida
 UNION ALL
 
 SELECT 
-    0 AS sk_id,
+    -1 AS sk_id,
     CAST(NULL AS DATE) AS data_referencia,
     CAST(NULL AS SMALLINT) AS ano,
     CAST(NULL AS TINYINT) AS mes,

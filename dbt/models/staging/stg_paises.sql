@@ -4,8 +4,28 @@
     ]
 ) }}
 
-SELECT 
-    CAST(column0 AS INTEGER) AS codigo,
-    column1 AS descricao,    
+WITH paises AS (
+    SELECT 
+        column0 AS codigo,
+        column1 AS descricao        
+    FROM {{ get_s3_path(base_path='silver/raw', file_name='paises') }}
+
+    UNION ALL
+
+    SELECT
+        -1 AS codigo,
+        'NÃO INFORMADO' AS descricao
+
+    UNION ALL
+
+    SELECT
+        -2 AS codigo,
+        'NÃO IDENTIFICADO' AS descricao
+)
+
+SELECT
+    CAST(ROW_NUMBER() OVER(ORDER BY codigo,descricao) AS SMALLINT) AS sk_id,
+    CAST(codigo AS SMALLINT) AS codigo,
+    descricao,
     NOW() AS data_processamento
-FROM {{ get_s3_path(base_path='silver/raw', file_name='paises') }}
+FROM paises

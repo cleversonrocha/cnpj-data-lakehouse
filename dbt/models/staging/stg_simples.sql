@@ -5,8 +5,8 @@
 ) }}
 
 SELECT    
-    CAST(column0 AS VARCHAR) AS cnpj_basico,        
-    CAST(column1 AS VARCHAR) AS opcao_simples,    
+    column0 AS cnpj_basico,        
+    column1 AS opcao_simples,    
     CASE 
         WHEN LENGTH(TRIM(column2)) = 8 AND column2 != '00000000'
         THEN TRY_CAST(strptime(column2, '%Y%m%d') AS DATE)
@@ -17,7 +17,7 @@ SELECT
         THEN TRY_CAST(strptime(column2, '%Y%m%d') AS DATE)
         ELSE NULL
     END AS data_exclusao_simples,    
-    CAST(column4 AS VARCHAR) AS opcao_mei,    
+    column4 AS opcao_mei,    
     CASE 
         WHEN LENGTH(TRIM(column5)) = 8 AND column5 != '00000000'
         THEN TRY_CAST(strptime(column5, '%Y%m%d') AS DATE)

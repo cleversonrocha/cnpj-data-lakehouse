@@ -1,4 +1,4 @@
--- {{ ref('dim_cnaes') }} ← comentário que força dependência
+-- {{ ref('stg_estabelecimentos') }} {{ ref('dim_cnaes') }} ← comentário que força dependência
 
 {{ config(    
     post_hook=[
