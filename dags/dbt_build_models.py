@@ -15,8 +15,7 @@ from databricks.sdk import WorkspaceClient
 )
 def dbt_build_models():
 
-    ano_mes = '2026_06'
-    #ano_mes = pendulum.now("America/Sao_Paulo").format("YYYY_MM")
+    ano_mes = pendulum.now("America/Sao_Paulo").format("YYYY_MM")
 
     @task.bash
     def dbt_build(ano_mes: str) -> str:      
@@ -72,7 +71,7 @@ def dbt_build_models():
                     
                     DATABRICKS_VOLUME = pasta
                     nome_arquivo_final = file_key.split('/')[-1]
-                    caminho_final_databricks = f"/Volumes/{DATABRICKS_CATALOG}/{DATABRICKS_SCHEMA}/{DATABRICKS_VOLUME}/{nome_arquivo_final}"
+                    caminho_final_databricks = f"/Volumes/{DATABRICKS_CATALOG}/{DATABRICKS_SCHEMA}/{DATABRICKS_VOLUME}/{ano_mes}/{nome_arquivo_final}"
 
                     print(f"📦 Iniciando Upload Streaming Direto via Databricks SDK: {nome_arquivo_final}")
 
