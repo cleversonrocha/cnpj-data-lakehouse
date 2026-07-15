@@ -23,10 +23,29 @@ MINIO_BUCKET_BRONZE = 'bronze'
     catchup=False,
     tags=["ingestao", "bronze"],
 )
-def rfb_datalake_ingestion():
+def rfb_datalake_ingestion():       
 
     @task
     def gerar_link_dinamico() -> str:
+
+        url_teste = "https://arquivos.receitafederal.gov.br/public.php/dav/files/YggdBLfdninEJX9/"                
+        caminho_certificado = "/opt/airflow/certs/arquivos.receitafederal.gov.br.crt"
+        
+        print(f"Iniciando teste de conexão estrita...")
+                
+        try:
+            #requests.head apenas testa a ligação e as credenciais de segurança, sem baixar dados
+            response = requests.head(url_teste, verify=caminho_certificado, timeout=15)                       
+            logger.info("-> O Airflow conseguiu validar a identidade do servidor do governo.")
+            logger.info(f"-> Código de Resposta HTTP: {response.status_code}")                        
+            
+        except requests.exceptions.SSLError as ssl_err:
+            logger.error("ERRO DE VALIDAÇÃO SSL!")
+            logger.error(f"Detalhes técnicos: {ssl_err}")                        
+            raise AirflowException(f"Erro crítico durante o download: {ssl_err}")                
+            
+        except Exception as e:            
+            raise AirflowException(f"Ocorreu um erro inesperado de rede: {e}")
         
         """Gera o link dinâmico baseado no mês atual."""
         data_execucao = pendulum.now("America/Sao_Paulo")
@@ -38,7 +57,7 @@ def rfb_datalake_ingestion():
 
     @task
     def baixar_e_enviar_minio(url: str):     
-
+        
         caminho_temporario = "/tmp/receita_dados_brutos.zip"               
         
         if not os.path.exists(caminho_temporario):            
@@ -83,8 +102,7 @@ def rfb_datalake_ingestion():
                     )
 
             except requests.exceptions.RequestException as e:
-                raise AirflowException(f"Erro crítico durante o download: {e}")
-                raise
+                raise AirflowException(f"Erro crítico durante o download: {e}")                
 
         else:
             logger.info('Arquivo já existe!')                    
