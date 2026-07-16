@@ -58,8 +58,8 @@ SELECT
         ELSE CAST(ef.codigo AS SMALLINT)
     END AS ente_federativo_responsavel,    
     CASE        
-        WHEN s.opcao_mei = 'S' AND s.data_exclusao_mei IS NULL THEN CAST(-1 AS TINYINT) --SIM
-        ELSE CAST(-2 AS TINYINT) --NÃO
+        WHEN s.opcao_mei = 'S' AND s.data_exclusao_mei IS NULL THEN CAST(1 AS TINYINT) --SIM
+        ELSE CAST(2 AS TINYINT) --NÃO
     END AS is_mei,
     NOW() AS data_processamento
 FROM empresas_qualificadas em
