@@ -53,15 +53,14 @@ SELECT
         ELSE CAST(pe.codigo AS TINYINT)
     END AS porte_empresa,    
     CASE
-        WHEN column6 IS NULL THEN -1 --NÃO INFORMADO
-        WHEN ef.codigo IS NULL THEN -2 --NÃO IDENTIFICADO
-        ELSE ef.codigo
-    END AS ente_federativo_responsavel,
-    CAST(
+        WHEN column6 IS NULL THEN CAST(-1 AS SMALLINT) --NÃO INFORMADO
+        WHEN ef.codigo IS NULL THEN CAST(-2 AS SMALLINT) --NÃO IDENTIFICADO
+        ELSE CAST(ef.codigo AS SMALLINT)
+    END AS ente_federativo_responsavel,    
     CASE        
-        WHEN s.opcao_mei = 'S' AND s.data_exclusao_mei IS NULL THEN 1 --SIM
-        ELSE 2 --NÃO
-    END AS TINYINT) AS is_mei,
+        WHEN s.opcao_mei = 'S' AND s.data_exclusao_mei IS NULL THEN CAST(-1 AS TINYINT) --SIM
+        ELSE CAST(-2 AS TINYINT) --NÃO
+    END AS is_mei,
     NOW() AS data_processamento
 FROM empresas_qualificadas em
 LEFT JOIN {{ ref('stg_naturezas') }} nj ON nj.codigo = em.column2
