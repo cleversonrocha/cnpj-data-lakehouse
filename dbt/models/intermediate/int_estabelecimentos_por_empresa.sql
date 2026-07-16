@@ -9,7 +9,7 @@
 SELECT
     sk_empresas,
     CAST(COUNT(sk_id) AS SMALLINT) AS qtd_estabelecimentos,
-    CAST(SUM(qtd_matrizes) AS SMALLINT) AS  qtd_matriz,
+    CAST(SUM(qtd_matrizes) AS TINYINT) AS  qtd_matriz,
     CAST(SUM(qtd_filiais) AS SMALLINT) AS  qtd_filiais,
     CAST(SUM(qtd_nulas) AS SMALLINT) AS  qtd_nulas,
     CAST(SUM(qtd_ativas) AS SMALLINT) AS  qtd_ativas,
