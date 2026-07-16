@@ -67,6 +67,41 @@ models:
           - type: check
             expression: "tipo_cnae IN ('SECUNDÁRIO')"
 
+  - name: int_empresas_nao_qualificadas
+    description: "Tabela com os CNPJ duplicados."
+    columns:
+      - name: column0
+        description: "cnpj_basico"
+        data_type: varchar
+
+      - name: column1
+        description: "razao_social"
+        data_type: varchar
+
+      - name: column2
+        description: "natureza_juridica"
+        data_type: varchar
+
+      - name: column3
+        description: "qualificacao_responsavel"
+        data_type: varchar
+
+      - name: column4
+        description: "porte_empresa"
+        data_type: varchar
+
+      - name: column5
+        description: "porte_empresa"
+        data_type: varchar
+
+      - name: column6
+        description: "ente_federativo_responsavel"
+        data_type: varchar
+
+      - name: rn
+        description: "ordem da qualificação"
+        data_type: integer      
+
   - name: int_estabelecimentos_por_empresa
     description: "Tabela intermediária para medidas dos estabelecimentos por empresa."
     columns:
@@ -90,7 +125,7 @@ models:
 
       - name: qtd_matriz
         description: "Total de matriz da empresa."
-        data_type: smallint
+        data_type: tinyint
         constraints:
           - type: not_null
           
@@ -944,6 +979,17 @@ models:
                   to: ref('dim_empresas')
                   field: sk_id
 
+      - name: sk_natureza_juridica
+        description: "Surrogate Key da dim_naturezas_juridicas."
+        data_type: smallint
+        constraints:          
+          - type: not_null
+        data_tests:
+          - relationships:
+                arguments:
+                  to: ref('dim_naturezas_juridicas')
+                  field: sk_id
+
       - name: sk_portes_empresas
         description: "Surrogate Key da dim_portes_empresas."
         data_type: tinyint
@@ -953,6 +999,17 @@ models:
           - relationships:
                 arguments:
                   to: ref('dim_portes_empresas')
+                  field: sk_id
+
+      - name: sk_ente_federativo_responsavel
+        description: "Surrogate Key da dim_entes_federativos."
+        data_type: smallint
+        constraints:          
+          - type: not_null
+        data_tests:
+          - relationships:
+                arguments:
+                  to: ref('dim_entes_federativos')
                   field: sk_id
 
       - name: sk_mei
