@@ -3,7 +3,7 @@ cnpj_data_lakehouse:
   outputs:
     dev:
       type: duckdb
-      path: '/opt/airflow/temp/cnpj_data_lakehouse.duckdb'
+      path: "/opt/airflow/temp/cnpj_data_lakehouse_{{ env_var('DBT_ANO_MES') }}.duckdb"
       threads: 1
             
       extensions:

@@ -35,7 +35,8 @@ def datalake_silver():
     except Exception as e:
         raise AirflowException(f"Erro ao configurar o cliente S3: {e}")
                 
-    ano_mes = pendulum.now("America/Sao_Paulo").format("YYYY_MM")     
+    ano_mes = pendulum.now("America/Sao_Paulo").format("YYYY_MM")
+    os.environ["DBT_ANO_MES"] = ano_mes
 
     @task
     def processar_entidades_unicas(tabela_nome: str, arquivo_zip: str):
@@ -148,7 +149,7 @@ def datalake_silver():
         
         con = duckdb.connect(database=':memory:')
         con.execute(f"PRAGMA temp_directory='{pasta_duckdb_tmp}';")               
-        con.execute("PRAGMA memory_limit='10GB';") 
+        con.execute("PRAGMA memory_limit='12GB';") 
         con.execute("INSTALL httpfs; LOAD httpfs;")        
         
         con.execute(f"""
