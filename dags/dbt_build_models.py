@@ -16,10 +16,16 @@ from databricks.sdk import WorkspaceClient
 def dbt_build_models():
 
     ano_mes = pendulum.now("America/Sao_Paulo").format("YYYY_MM")
+    os.environ["DBT_ANO_MES"] = ano_mes
 
     @task.bash
-    def dbt_build(ano_mes: str) -> str:      
-        return f'cd /opt/airflow/dbt && dbt build --select staging marts intermediate --vars \'{{"ano_mes": "{ano_mes}"}}\''    
+    def dbt_build(ano_mes: str) -> str:
+        return (
+            f'rm -f /opt/airflow/temp/cnpj_data_lakehouse_{ano_mes}.duckdb* && '
+            f'cd /opt/airflow/dbt && '
+            f'dbt build '            
+            f'--vars \'{{"ano_mes": "{ano_mes}"}}\''
+        )   
             
     @task
     def upload_minio_to_databricks_volume(schema: str,volumes: list, ano_mes: str):
