@@ -1,6 +1,6 @@
 {{ config(    
     post_hook=[
-        export_to_s3(bucket_path='silver/cleaned', file_name='dim_municipios_exterior')
+        export_to_s3(bucket_path='silver/cleaned', file_name='municipios_exterior')
     ]
 ) }}
 
