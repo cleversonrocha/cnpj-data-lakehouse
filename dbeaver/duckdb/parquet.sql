@@ -9,3 +9,5 @@ SET s3_secret_access_key='cleverson';
 SET s3_use_ssl=false; -- Como é localhost, não usa HTTPS
 SET s3_region='us-east-1'; -- Valor padrão, apenas para preencher o requisito do protocolo
 SET s3_url_style='path'; -- MUITO IMPORTANTE para o MinIO local funcionar!
+
+SELECT * FROM read_parquet('s3://my-bucket-name/data.parquet');
