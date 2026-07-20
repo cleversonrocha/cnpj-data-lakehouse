@@ -5,7 +5,7 @@
 ) }}
 
 WITH nome_cidade_exterior_distintas AS (
-    SELECT DISTINCT column08 AS nome_cidade_exterior, 
+    SELECT DISTINCT column08 AS nome_cidade_exterior 
     FROM {{ get_s3_path(base_path='silver/raw', file_name='estabelecimentos') }}
     WHERE column08 IS NOT NULL
 ),

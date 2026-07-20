@@ -100,6 +100,6 @@ LEFT JOIN {{ ref('stg_situacoes_cadastrais_motivos') }} scm ON scm.codigo = e.co
 LEFT JOIN {{ ref('stg_municipios_exterior') }} me ON me.descricao = e.column08
 LEFT JOIN {{ ref('stg_paises') }} p ON p.codigo = e.column09
 LEFT JOIN {{ ref('stg_cnaes') }} c ON c.codigo = e.column11
-LEFT JOIN {{ ref('stg_ufs') }} u ON u.descricao = e.column19
+LEFT JOIN {{ ref('stg_ufs') }} u ON u.sigla = e.column19
 LEFT JOIN {{ ref('stg_municipios') }} mu ON mu.codigo = e.column20
 LEFT JOIN {{ ref('stg_situacoes_especiais') }} se ON se.descricao = e.column28
