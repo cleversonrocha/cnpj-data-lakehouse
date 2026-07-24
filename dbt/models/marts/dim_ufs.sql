@@ -6,4 +6,4 @@
     ]
 ) }}
 
-SELECT sk_id,codigo,sigla,descricao,regiao, FROM {{ ref('stg_ufs') }}
+SELECT sk_id,codigo,sigla,descricao,regiao FROM {{ ref('stg_ufs') }}
