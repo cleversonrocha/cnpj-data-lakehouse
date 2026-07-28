@@ -46,7 +46,7 @@ WITH socios AS (
 )
 
 SELECT
-    CAST(ROW_NUMBER() OVER(ORDER BY cnpj_basico,identificador,nome_razao_social,cpf_cnpj,qualificacao,data_entrada_sociedade,pais,representante_legal,nome_do_representante,qualificacao_representante,faixa_etaria_socio) AS INTEGER) AS sk_id,
+    CAST(ROW_NUMBER() OVER() AS INTEGER) AS sk_id,
     cnpj_basico,
     identificador,
     nome_razao_social,
