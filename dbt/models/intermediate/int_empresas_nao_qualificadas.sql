@@ -1,33 +1,43 @@
 {{ config(    
     post_hook=[
-        export_to_s3(bucket_path='silver/raw', file_name = 'int_empresas_nao_qualificadas')
+        export_to_s3(bucket_path='gold/int', file_name = 'int_empresas_nao_qualificadas')
     ]
 ) }}
 
-WITH empresas AS (
+WITH empresas_nao_qualificadas AS (
     SELECT
-        column0,
-        column1,
-        column2,
-        column3,
-        column4,
-        column5,
-        column6,
+        cnpj_basico,
+        razao_social,
+        natureza_juridica,
+        qualificacao_responsavel,
+        capital_social,
+        porte_empresa,
+        ente_federativo_responsavel,
         CAST(    
             ROW_NUMBER() OVER (
-                PARTITION BY column0
+                PARTITION BY cnpj_basico
                 ORDER BY
-                    (CASE WHEN column1 IS NOT NULL THEN 1 ELSE 0 END
-                    + CASE WHEN column2 IS NOT NULL THEN 1 ELSE 0 END
-                    + CASE WHEN column3 IS NOT NULL THEN 1 ELSE 0 END
-                    + CASE WHEN column4 IS NOT NULL THEN 1 ELSE 0 END
-                    + CASE WHEN column5 IS NOT NULL THEN 1 ELSE 0 END
-                    + CASE WHEN column6 IS NOT NULL THEN 1 ELSE 0 END) DESC,
-                    column1 DESC NULLS LAST -- desempate determinístico se completude empatar
+                    (CASE WHEN razao_social IS NOT NULL THEN 1 ELSE 0 END
+                    + CASE WHEN natureza_juridica IS NOT NULL THEN 1 ELSE 0 END
+                    + CASE WHEN qualificacao_responsavel IS NOT NULL THEN 1 ELSE 0 END
+                    + CASE WHEN capital_social IS NOT NULL THEN 1 ELSE 0 END
+                    + CASE WHEN porte_empresa IS NOT NULL THEN 1 ELSE 0 END
+                    + CASE WHEN ente_federativo_responsavel IS NOT NULL THEN 1 ELSE 0 END) DESC,
+                    razao_social DESC NULLS LAST -- desempate determinístico se completude empatar
             ) AS INTEGER
         ) AS rn
-    FROM {{ get_s3_path(base_path='silver/raw', file_name='empresas') }} em
+    FROM {{ ref('stg_empresas') }} em
     QUALIFY rn > 1
 )
 
-SELECT * FROM empresas
+SELECT    
+    cnpj_basico,
+    razao_social,
+    natureza_juridica,
+    qualificacao_responsavel,
+    capital_social,
+    porte_empresa,
+    ente_federativo_responsavel,
+    rn,
+    NOW() AS data_processamento
+FROM empresas_nao_qualificadas

@@ -1,6 +1,6 @@
 {{ config(    
     post_hook=[        
-        export_to_s3(bucket_path='gold/dim', file_name='dim_tempo_entrada_sociedade')
+        export_to_s3(bucket_path='gold/dim', file_name='dim_tempo_situacoes_cadastrais')
     ]
 ) }}
 
@@ -10,4 +10,4 @@ SELECT
     ano,
     mes,
     NOW() AS data_processamento 
-FROM {{ ref('int_tempo_entrada_sociedade') }}
+FROM {{ ref('int_tempo_situacoes_cadastrais') }}

@@ -1,32 +1,16 @@
 {{ config(
     post_hook=[
-        export_to_s3(bucket_path='silver/cleaned', file_name='simples')
+        export_to_s3(bucket_path='silver/cleaned', file_name='stg_simples')
     ]
 ) }}
 
 SELECT    
-    column0 AS cnpj_basico,        
+    column0 AS cnpj_basico,
     column1 AS opcao_simples,    
-    CASE 
-        WHEN LENGTH(TRIM(column2)) = 8 AND column2 != '00000000'
-        THEN TRY_CAST(strptime(column2, '%Y%m%d') AS DATE)
-        ELSE NULL
-    END AS data_opcao_simples,
-    CASE 
-        WHEN LENGTH(TRIM(column3)) = 8 AND column2 != '00000000'
-        THEN TRY_CAST(strptime(column2, '%Y%m%d') AS DATE)
-        ELSE NULL
-    END AS data_exclusao_simples,    
-    column4 AS opcao_mei,    
-    CASE 
-        WHEN LENGTH(TRIM(column5)) = 8 AND column5 != '00000000'
-        THEN TRY_CAST(strptime(column5, '%Y%m%d') AS DATE)
-        ELSE NULL
-    END AS data_opcao_mei,      
-    CASE 
-        WHEN LENGTH(TRIM(column6)) = 8 AND column6 != '00000000'
-        THEN TRY_CAST(strptime(column6, '%Y%m%d') AS DATE)
-        ELSE NULL
-    END AS data_exclusao_mei, 
+    TRY_CAST(try_strptime(column2, '%Y%m%d') AS DATE) AS data_opcao_simples,        
+    TRY_CAST(try_strptime(column3, '%Y%m%d') AS DATE) AS data_exclusao_simples,
+    column4 AS opcao_mei,        
+    TRY_CAST(try_strptime(column5, '%Y%m%d') AS DATE) AS data_opcao_mei,     
+    TRY_CAST(try_strptime(column6, '%Y%m%d') AS DATE) AS data_exclusao_mei,    
     NOW() AS data_processamento
 FROM {{ get_s3_path(base_path='silver/raw', file_name='simples') }}

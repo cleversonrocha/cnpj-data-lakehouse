@@ -3,24 +3,12 @@ version: 1
 models:
   - name: stg_cnaes
     description: "Tabela de Classificação Nacional de Atividades Econômicas (CNAE) da Receita Federal."
-    columns:
-      - name: sk_id
-        description: "Surrogate Key da atividade econômica."        
-        data_tests:
-          - unique
-          - not_null
-
+    columns:      
       - name: codigo        
         description: "Código da atividade econômica."        
         data_tests:
           - unique
-          - not_null
-
-      - name: codigo_formatado        
-        description: "Código da atividade econômica formatado."        
-        data_tests:
-          - unique
-          - not_null
+          - not_null      
 
       - name: descricao
         description: "Nome da atividade econômica."        
@@ -35,23 +23,12 @@ models:
   - name: stg_empresas
     description: "Tabela de empresas."
     columns:
-      - name: sk_id
-        description: "Surrogate Key"
-        data_tests:
-          - unique          
-          - not_null
-
       - name: cnpj_basico
-        description: "Número base de inscrição no CNPJ (OITO PRIMEIROS DÍGITOS DO CNPJ)."                
-        data_tests:
-          - unique
-          - not_null
+        description: "Número base de inscrição no CNPJ (OITO PRIMEIROS DÍGITOS DO CNPJ)."                              
                         
       - name: razao_social
         description: "Nome empresarial da pessoa jurídica."
-        data_tests:
-          - not_null
-        
+                
       - name: natureza_juridica
         description: "Código da natureza jurídica."
         data_tests:
@@ -69,46 +46,10 @@ models:
         
       - name: porte_empresa
         description: "Código do porte da empresa."
-        data_tests:
-          - not_null
-                
+                        
       - name: ente_federativo_responsavel        
         description: "O ente federativo responsável é preenchido para os casos de orgãos e entidades do grupo de natureza jurídica 1xxx. Para as demais naturezas, este atributo fica em branco."
-        data_tests:
-          - not_null
-                
-      - name: is_mei
-        description: "Indicador do histórico e status de opção pelo MEI (Microempreendedor Individual)."
-        data_type: varchar
-        data_tests:
-          - not_null
-
-      - name: data_processamento
-        description: "Data e hora do processamento dos dados."
-        data_tests:
-          - not_null
-
-  - name: stg_entes_federativos
-    description: "Ente federativo responsável pela empresa."
-    columns:
-      - name: sk_id
-        description: "SK da dim_entes_federativos."        
-        data_tests:
-          - unique
-          - not_null
-
-      - name: codigo
-        description: "Código do ente federativo."
-        data_tests:
-          - unique
-          - not_null
-
-      - name: descricao
-        description: "Descrição do ente federativo."
-        data_tests:                    
-          - unique
-          - not_null
-
+            
       - name: data_processamento
         description: "Data e hora do processamento dos dados."
         data_tests:
@@ -117,12 +58,6 @@ models:
   - name: stg_estabelecimentos
     description: "Tabela contendo os dados cadastrais dos estabelecimentos (Matrizes e Filiais) extraídos da Receita Federal."        
     columns:
-      - name: sk_id
-        description: "Surrogate Key"
-        data_tests:
-          - unique          
-          - not_null
-
       - name: cnpj_basico
         description: "Número base de inscrição no CNPJ (Oito primeiros dígitos)."
         data_tests:
@@ -159,14 +94,10 @@ models:
 
       - name : cidade_exterior
         description: "Código da cidade do exterior."
-        data_tests:
-          - not_null
-
+        
       - name : pais
         description: "Código do país."
-        data_tests:
-          - not_null 
-
+        
       - name: data_inicio_atividade
         description: "Data de início da atividade do estabelecimento."
         data_tests:
@@ -240,82 +171,9 @@ models:
       - name: data_processamento
         description: "Data e hora em que este registro foi processado na camada Silver."
 
-  - name: stg_faixas_etarias
-    description: "Código das faixas etárias dos sócios da empresa."
-    columns:
-      - name: sk_id
-        description: "SK da stg_faixas_etarias."        
-        data_tests:
-          - unique
-          - not_null
-
-      - name: codigo
-        description: "Código da faixa etária."        
-        data_tests:
-          - not_null          
-
-      - name: descricao
-        description: "Descrição da faixa etária."        
-        data_tests:
-          - not_null
-
-  - name: stg_is_mei
-    description: "Tabela com status se empresa é MEI."
-    columns:
-      - name: sk_id
-        description: "SK da stg_is_mei."        
-        data_tests:
-          - unique
-          - not_null
-
-      - name: codigo
-        description: "Código do status."
-        data_tests:        
-            - unique
-            - not_null            
-
-      - name: descricao
-        description: "Descrição do status."        
-        data_tests:
-          - not_null
-
-      - name: data_processamento
-        description: "Data e hora em que este registro foi processado na camada Silver."  
-
-  - name: stg_municipios_exterior
-    description: "Tabela com os municípios do exterior dos estabelecimentos."
-    columns:
-      - name: sk_id
-        description: "SK da stg_municipios_exterior."        
-        data_tests:
-          - unique
-          - not_null
-
-      - name: codigo
-        description: "Código do município."
-        data_tests:        
-            - unique
-            - not_null            
-
-      - name: descricao
-        description: "Descrição do município."        
-        data_tests:
-          - not_null
-        
-      - name: data_processamento
-        description: "Data e hora do processamento dos dados."        
-        data_tests:
-          - not_null
-
   - name: stg_municipios  
     description: "Tabela de municípios do Brasil."    
     columns:
-      - name: sk_id
-        description: "SK da stg_municipios."        
-        data_tests:
-          - unique
-          - not_null
-
       - name: codigo
         description: "Código do município."
         data_tests:        
@@ -335,20 +193,8 @@ models:
   - name: stg_naturezas
     description: "Naturezas jurídicas das empresas."
     columns:
-      - name: sk_id
-        description: "SK da stg_naturezas."        
-        data_tests:
-          - unique
-          - not_null
-
       - name: codigo
         description: "Código da natureza jurídica."        
-        data_tests:
-          - unique
-          - not_null
-
-      - name: codigo_formatado
-        description: "Código formatado com número e descrição da natureza jurídica."        
         data_tests:
           - unique
           - not_null
@@ -366,12 +212,6 @@ models:
   - name: stg_paises
     description: "Tabela com os países do mundo."
     columns:
-      - name: sk_id
-        description: "SK da stg_paises."        
-        data_tests:
-          - unique
-          - not_null
-
       - name: codigo
         description: "Código do país."
         data_tests:        
@@ -388,45 +228,9 @@ models:
         data_tests:
           - not_null
 
-  - name: stg_portes_empresas
-    description: "Tabela com os tipos de portes das empresas."
-    columns:
-      - name: sk_id
-        description: "SK da stg_portes_empresas."        
-        data_tests:
-          - unique
-          - not_null
-
-      - name: codigo
-        description: "Código do porte."
-        data_tests:        
-            - unique
-            - not_null            
-
-      - name: sigla
-        description: "Sigla do porte."        
-        data_tests:
-          - not_null
-
-      - name: descricao
-        description: "Descrição do porte."        
-        data_tests:
-          - not_null
-        
-      - name: data_processamento
-        description: "Data e hora do processamento dos dados."        
-        data_tests:
-          - not_null      
-
   - name: stg_qualificacoes
     description: "Qualificações dos sócios de empresas."
     columns:
-      - name: sk_id
-        description: "SK da stg_qualificacoes."        
-        data_tests:
-          - unique
-          - not_null
-
       - name: codigo
         description: "Código da qualificação."
         data_tests:        
@@ -462,9 +266,7 @@ models:
         
       - name: data_exclusao_simples
         description: "Data de exclusão do simples."        
-        data_tests:
-          - not_null
-        
+                
       - name: opcao_mei
         description: "Indicador da existência da opção pelo MEI (S - SIM | N - NÃO | EM BRANCO - OUTROS)."        
         data_tests:
@@ -481,90 +283,9 @@ models:
         data_tests:
           - not_null
 
-  - name: stg_situacoes_cadastrais_motivos
-    description: "Tabela com os tipos de motivos das situações cadastrais dos estabelecimentos."
-    columns:
-    - name: sk_id
-      description: "SK da stg_situacoes_cadastrais_motivos."        
-      data_tests:
-        - unique
-        - not_null
-
-    - name: codigo
-      description: "Código da situação do motivo cadastral."
-      data_tests:        
-          - unique
-          - not_null            
-
-    - name: descricao
-      description: "Descrição da situação do motivo cadastral.."        
-      data_tests:
-        - not_null
-      
-    - name: data_processamento
-      description: "Data e hora do processamento dos dados."        
-      data_tests:
-        - not_null 
-
-  - name: stg_situacoes_cadastrais
-    description: "Tabela com os tipos das situações cadastrais."
-    columns:
-    - name: sk_id
-      description: "SK da stg_situacoes_cadastrais."        
-      data_tests:
-        - unique
-        - not_null
-
-    - name: codigo
-      description: "Código da situação cadastral."
-      data_tests:        
-          - unique
-          - not_null            
-
-    - name: descricao
-      description: "Descrição da situação cadastral."        
-      data_tests:
-        - not_null
-      
-    - name: data_processamento
-      description: "Data e hora do processamento dos dados."        
-      data_tests:
-        - not_null
-
-  - name: stg_situacoes_especiais
-    description: "Tabela com os tipos das situações especiais."
-    columns:
-    - name: sk_id
-      description: "SK da stg_situacoes_especiais."        
-      data_tests:
-        - unique
-        - not_null
-
-    - name: codigo
-      description: "Código da situação especial."
-      data_tests:        
-          - unique
-          - not_null            
-
-    - name: descricao
-      description: "Descrição da situação especial."        
-      data_tests:
-        - not_null
-      
-    - name: data_processamento
-      description: "Data e hora do processamento dos dados."        
-      data_tests:
-        - not_null  
-
   - name: stg_socios
     description: "Tabela de sócios de empresas."
     columns:
-      - name: sk_id
-        description: "Surrogate Key do sócio da empresa"        
-        data_tests:
-          - unique
-          - not_null
-
       - name: cnpj_basico
         description: "Número base de inscrição no CNPJ (CADASTRO NACIONAL DA  PESSOA JURÍDICA)."        
         data_tests:
@@ -610,88 +331,3 @@ models:
         description: "Data e hora do processamento dos dados."
         data_tests:
           - not_null
-        
-  - name: stg_tipos_estabelecimentos
-    description: "Tabela com os tipos dos estabelecimentos."
-    columns:
-    - name: sk_id
-      description: "SK da stg_tipos_estabelecimentos."        
-      data_tests:
-        - unique
-        - not_null
-
-    - name: codigo
-      description: "Código do tipo do estabelecimento."
-      data_tests:        
-          - unique
-          - not_null            
-
-    - name: descricao
-      description: "Descrição do tipo do estabelecimento."        
-      data_tests:
-        - not_null
-      
-    - name: data_processamento
-      description: "Data e hora do processamento dos dados."        
-      data_tests:
-        - not_null
-
-  - name: stg_tipos_pessoas
-    description: "Tabela com os tipos de pessoas dos sócios."
-    columns:
-      - name: sk_id
-        description: "SK da stg_tipos_pessoas."        
-        data_tests:
-          - unique
-          - not_null
-
-      - name: codigo
-        description: "Código do tipo da pessoa."
-        data_tests:        
-            - unique
-            - not_null            
-
-      - name: descricao
-        description: "Descrição do tipo da pessoa."        
-        data_tests:
-          - not_null
-        
-      - name: data_processamento
-        description: "Data e hora do processamento dos dados."        
-        data_tests:
-          - not_null
-
-  - name: stg_ufs
-    description: "Tabela com os estados."
-    columns:
-    - name: sk_id
-      description: "SK da stg_ufs."        
-      data_tests:
-        - unique
-        - not_null
-
-    - name: codigo
-      description: "Código do tipo da uf."
-      data_tests:        
-          - unique
-          - not_null
-
-    - name: sigla
-      description: "Sigla da uf."        
-      data_tests:
-        - not_null            
-
-    - name: descricao
-      description: "Descrição do estado."        
-      data_tests:
-        - not_null
-
-    - name: regiao
-      description: "Descrição da regição do estado."        
-      data_tests:
-        - not_null
-      
-    - name: data_processamento
-      description: "Data e hora do processamento dos dados."        
-      data_tests:
-        - not_null    

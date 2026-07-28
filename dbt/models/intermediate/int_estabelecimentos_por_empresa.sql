@@ -1,5 +1,3 @@
--- {{ ref('fact_estabelecimentos') }} ← comentário que força dependência
-
 {{ config(    
     post_hook=[
         export_to_s3(bucket_path='gold/int', file_name='int_estabelecimentos_por_empresa')
@@ -7,14 +5,14 @@
 ) }}
 
 SELECT
-    sk_empresas,
+    cnpj_basico,
     CAST(COUNT(sk_id) AS SMALLINT) AS qtd_estabelecimentos,
-    CAST(SUM(qtd_matrizes) AS TINYINT) AS  qtd_matriz,
-    CAST(SUM(qtd_filiais) AS SMALLINT) AS  qtd_filiais,
-    CAST(SUM(qtd_nulas) AS SMALLINT) AS  qtd_nulas,
-    CAST(SUM(qtd_ativas) AS SMALLINT) AS  qtd_ativas,
-    CAST(SUM(qtd_suspensas) AS SMALLINT) AS  qtd_suspensas,
-    CAST(SUM(qtd_inaptas) AS SMALLINT) AS  qtd_inaptas,
-    CAST(SUM(qtd_baixadas) AS SMALLINT) AS  qtd_baixadas
-FROM {{ ref('fact_estabelecimentos') }}
-GROUP BY sk_empresas
+    CAST(SUM(CASE WHEN identificador_matriz_filial = 1 THEN 1 ELSE 0 END)  AS TINYINT) AS qtd_matrizes,
+    CAST(SUM(CASE WHEN identificador_matriz_filial = 2 THEN 1 ELSE 0 END)  AS SMALLINT) AS qtd_filiais,        
+    CAST(SUM(CASE WHEN situacao_cadastral = 1 THEN 1 ELSE 0 END)  AS SMALLINT) AS qtd_situacao_nulas,
+    CAST(SUM(CASE WHEN situacao_cadastral = 2 THEN 1 ELSE 0 END)  AS SMALLINT) AS qtd_situacao_ativas,
+    CAST(SUM(CASE WHEN situacao_cadastral = 3 THEN 1 ELSE 0 END)  AS SMALLINT) AS qtd_situacao_suspensas,
+    CAST(SUM(CASE WHEN situacao_cadastral = 4 THEN 1 ELSE 0 END)  AS SMALLINT) AS qtd_situacao_inaptas,
+    CAST(SUM(CASE WHEN situacao_cadastral = 8 THEN 1 ELSE 0 END)  AS SMALLINT) AS qtd_situacao_baixadas
+FROM {{ ref('int_estabelecimentos') }}
+GROUP BY cnpj_basico
