@@ -10,9 +10,12 @@ qtd_intermediate AS (
     FROM {{ ref('int_empresas') }}    
 ),
 qtd_marts AS (
-    SELECT        
-        COUNT(sk_empresa) as qtd
-    FROM {{ ref('fact_empresas') }}    
+    SELECT COUNT(*) AS qtd FROM (
+        SELECT        
+            sk_empresa
+        FROM {{ ref('fact_estabelecimentos') }}
+        GROUP BY sk_empresa
+    )    
 ),
 qtd_nao_qualificadas AS (
     SELECT

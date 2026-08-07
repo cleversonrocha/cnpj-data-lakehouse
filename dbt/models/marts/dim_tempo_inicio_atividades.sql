@@ -9,5 +9,6 @@ SELECT
     data_referencia,
     ano,
     mes,
+    nome_mes,
     NOW() AS data_processamento 
 FROM {{ ref('int_tempo_inicio_atividades') }}

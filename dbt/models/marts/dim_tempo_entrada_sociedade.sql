@@ -8,6 +8,7 @@ SELECT
     sk_id,
     data_referencia,
     ano,
-    mes,
+    mes,    
+    nome_mes,
     NOW() AS data_processamento 
 FROM {{ ref('int_tempo_entrada_sociedade') }}

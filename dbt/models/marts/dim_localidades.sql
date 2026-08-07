@@ -17,16 +17,15 @@ WITH localidades AS (
 
 SELECT
     l.sk_id,
-    l.municipio,
-    m.descricao AS descricao_municipio,
-    l.cidade_exterior,
-    ce.descricao AS descricao_cidade_exterior,
-    l.uf,
-    u.sigla AS descricao_uf,
-    u.codigo AS regiao,
-    u.regiao AS descricao_regiao,
-    l.pais,
-    p.descricao AS descricao_pais,
+    m.codigo AS codigo_municipio,
+    m.descricao AS municipio,    
+    ce.codigo AS codigo_cidade_exterior,
+    ce.descricao AS cidade_exterior,    
+    u.codigo AS codigo_uf,
+    u.sigla AS uf,    
+    u.regiao AS regiao,    
+    p.codigo AS codigo_pais,
+    p.descricao AS pais,
     NOW() AS data_processamento
 FROM localidades l
 JOIN {{ ref('int_municipios') }} m ON m.codigo = l.municipio

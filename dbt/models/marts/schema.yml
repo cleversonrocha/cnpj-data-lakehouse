@@ -2,37 +2,211 @@ version: 1
 
 models:
 
-  - name: bridge_empresas_socios
-    description: "Relação many-to-many entre dim_empresas e dim_socios, no grão de estabelecimento."        
-    constraints:
-      - type: unique
-        columns: [sk_empresa, sk_socio]
+  - name: agg_fact_estabelecimentos_cnaes
+    description: "Agregação da quantidade de estabelecimentos por CNAE."
     columns:
-      - name: sk_empresa
-        description: "SK da empresa."
+      - name: sk_cnae
+        description: "SK do CNAE."
+        data_type: smallint
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_cnaes')
+                field: sk_id
+
+      - name: sk_tempo_inicio_atividade
+        description: "SK da dim_tempo_inicio_atividades."
         data_type: integer
         constraints:
           - type: not_null
         data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_tempo_inicio_atividades')
+                field: sk_id
+                
+      - name: sk_situacoes
+        description: "SK da dim_situacoes."
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_situacoes')
+                field: sk_id
+
+      - name: sk_localidades
+        description: "SK da dim_localidades."
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_localidades')
+                field: sk_id
+
+      - name: tipo_cnae      
+        description: "PRINCIPAL ou SECUNDÁRIO"
+        data_type: varchar
+        constraints:
+          - type: check
+            expression: "tipo_cnae IN ('PRINCIPAL', 'SECUNDÁRIO')"
+
+      - name: qtd_cnaes
+        description: "Quantidade de CNAES por sk_tempo_inicio_atividade, sk_tempo_situacoes_cadastrais, sk_tempo_situacoes_especiais, sk_situacoes, sk_localidades e tipo_cnae."
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+  - name: agg_fact_estabelecimentos
+    description: "Tabela agregada para fact_estabelecimentos"
+    columns:
+      - name: sk_tempo_inicio_atividade
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_tempo_inicio_atividades')
+                field: sk_id
+      
+      - name: sk_situacoes
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_situacoes')
+                field: sk_id
+
+      - name: sk_localidades
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_localidades')
+                field: sk_id  
+
+      - name: qtd_matrizes    
+        description: "Quantidade de estabelecimentos do tipo MATRIZ."
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+      - name: qtd_filiais
+        description: "Quantidade de estabelecimentos do tipo FILIAL."
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+      - name: qtd_nulas
+        description: "Quantidade de estabelecimentos que estão com a situação NULA."
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+      - name: qtd_ativas
+        description: "Quantidade de estabelecimentos que estão com a situação ATIVA."
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+      - name: qtd_suspensas
+        description: "Quantidade de estabelecimentos que estão com a situação SUSPENSA."
+        data_type: smallint  
+        constraints:
+          - type: not_null
+
+      - name: qtd_inaptas
+        description: "Quantidade de estabelecimentos que estão com a situação INAPTA."
+        data_type: smallint  
+        constraints:
+          - type: not_null
+
+      - name: qtd_baixadas
+        description: "Quantidade de estabelecimentos que estão com a situação BAIXADA."
+        data_type: smallint  
+        constraints:
+          - type: not_null      
+
+      - name: qtd_estabelecimentos
+        description: "Quantidade de estabelecimentos da empresa."
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+  - name: agg_socios_ranking
+    description: >
+      Tabela de agregação (grão: 1 linha por empresa) com totais de sócios
+      por tipo (PF, PJ, Estrangeiro) e seus respectivos rankings pré-calculados.
+      Usada para otimizar consultas de "Top N empresas" no Power BI, evitando
+      RANKX em tempo real sobre fact_socios em DirectQuery.
+    columns:
+      - name: sk_empresa
+        description: Chave surrogate da empresa, referencia dim_empresas.sk_id
+        data_type: integer
+        constraints:
+          - type: unique
+          - type: not_null
+        data_tests:          
           - relationships:
               arguments:
                 to: ref('dim_empresas')
                 field: sk_id
 
-      - name: sk_socio
-        description: "SK do sócio."
+      - name: total_pf
+        description: Total de sócios pessoa física vinculados à empresa
+        data_type: smallint
+        constraints:
+          - type: not_null          
+
+      - name: total_pj
+        description: Total de sócios pessoa jurídica vinculados à empresa
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+      - name: total_estrangeiro
+        description: Total de sócios estrangeiros vinculados à empresa
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+      - name: total_socios
+        description: Total geral de sócios (PF + PJ + Estrangeiro) por empresa
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+      - name: rank_pf
+        description: Ranking da empresa por total_pf (1 = maior total)
         data_type: integer
         constraints:
           - type: not_null
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('dim_socios')
-                field: sk_id
 
-      - name: data_processamento
-        description: "Data da processamento."
-        data_type: timestamptz  
+      - name: rank_pj
+        description: Ranking da empresa por total_pj (1 = maior total)
+        data_type: integer
+        constraints:
+          - type: not_null
+
+      - name: rank_estrangeiro
+        description: Ranking da empresa por total_estrangeiro (1 = maior total)
+        data_type: integer
+        constraints:
+          - type: not_null
+
+      - name: rank_total_socios
+        description: Ranking da empresa por total_socios (1 = maior total)
+        data_type: integer
         constraints:
           - type: not_null
 
@@ -85,7 +259,7 @@ models:
         data_type: smallint
         constraints:
           - type: unique
-          - type: not_null
+          - type: not_null      
 
       - name: codigo
         description: "Código CNAE"
@@ -142,8 +316,8 @@ models:
         constraints:
           - type: not_null
 
-      - name: natureza_juridica
-        description: "Natureza jurídica da empresa."
+      - name: codigo_natureza_juridica
+        description: "Código da natureza jurídica da empresa."
         data_type: smallint
         constraints:
           - type: not_null
@@ -153,31 +327,20 @@ models:
                 to: ref('int_naturezas')
                 field: codigo
 
-      - name: descricao_natureza_juridica
+      - name: natureza_juridica
         description: "Descricao da natureza jurídica da empresa."
         data_type: varchar
         constraints:
-          - type: not_null
+          - type: not_null      
 
       - name: qualificacao_responsavel
-        description: "Natureza jurídica da empresa."
-        data_type: tinyint
-        constraints:
-          - type: not_null
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('int_qualificacoes')
-                field: codigo
-
-      - name: descricao_qualificacao_responsavel
         description: "Descrição da qualificação do responsável pela empresa."
         data_type: varchar
         constraints:
           - type: not_null
-
-      - name: porte_empresa
-        description: "Porte da empresa."
+      
+      - name: codigo_porte_empresa
+        description: "Código do porte da empresa."
         data_type: tinyint
         constraints:
           - type: not_null
@@ -187,30 +350,29 @@ models:
                 to: ref('int_portes_empresas')
                 field: codigo
 
-      - name: descricao_porte_empresa
-        description: "Natureza jurídica da empresa."
+      - name: porte_empresa
+        description: "Porte da empresa."
         data_type: varchar
         constraints:
-          - type: not_null
+          - type: not_null      
 
       - name: ente_federativo_responsavel
-        description: "Ente federativo responsável da empresa."
-        data_type: smallint
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('int_entes_federativos')
-                field: codigo
-
-      - name: descricao_ente_federativo_responsavel
         description: "Descrição do ente federativo da empresa."
         data_type: varchar
+
+      - name: opcao_simples
+        description: "Opção pelo regime simples da empresa."
+        data_type: varchar        
+
+      - name: opcao_mei
+        description: "Opção pelo regime MEI da empresa."
+        data_type: varchar            
         
       - name: data_processamento
         description: "Data da processamento."
         data_type: timestamptz  
         constraints:
-          - type: not_null          
+          - type: not_null
 
   - name: dim_localidades
     description: "Localidades dos estabelecimentos"
@@ -220,65 +382,69 @@ models:
         data_type: integer
         constraints:
           - type: unique
-          - type: not_null    
+          - type: not_null          
 
-      - name: municipio
+      - name: codigo_municipio
         description: "Código do município do logradouro."
         data_type: smallint
+        constraints:
+          - type: not_null
         data_tests:
           - relationships:
               arguments:
                 to: ref('int_municipios')
                 field: codigo
 
-      - name: descricao_municipio
+      - name: municipio
         description: "Descrição do município do logradouro."
-        data_type: varchar
+        data_type: varchar      
 
-      - name: cidade_exterior
+      - name: codigo_cidade_exterior
         description: "Código da cidade do estabelecimento quando do exterior."
         data_type: smallint
+        constraints:
+          - type: not_null
         data_tests:
           - relationships:
               arguments:
                 to: ref('int_cidades_exterior')
                 field: codigo
 
-      - name: descricao_cidade_exterior
+      - name: cidade_exterior
         description: "Cidade do estabelecimento quando do exterior."
         data_type: varchar
-
-      - name: uf
-        description: "Código da UF do município."
+      
+      - name: codigo_uf
+        description: "Código da UF do município ou cidade do exterior (EX)."
         data_type: tinyint
+        constraints:
+          - type: not_null
         data_tests:
           - relationships:
               arguments:
                 to: ref('int_ufs')
                 field: codigo
 
-      - name: descricao_uf
+      - name: uf
         description: "Sigla do estado do município ou cidade do exterior (EX)."
-        data_type: varchar
+        data_type: varchar      
 
       - name: regiao
-        description: "Código da UF do município."
-        data_type: tinyint       
-
-      - name: descricao_regiao
         description: "Sigla do estado do município ou cidade do exterior (EX)."
-        data_type: varchar
+        data_type: varchar      
 
-      - name: pais
+      - name: codigo_pais
         description: "Código do País da UF."
         data_type: smallint
+        constraints:
+          - type: not_null
         data_tests:
           - relationships:
               arguments:
                 to: ref('int_paises')
                 field: codigo
 
-      - name: descricao_pais
+      - name: pais
         description: "Descrição do País da UF."
         data_type: varchar
 
@@ -287,6 +453,90 @@ models:
         data_type: timestamptz  
         constraints:
           - type: not_null
+
+  - name: dim_situacoes
+    description: "Dimensão de situações dos estabelecimentos."
+    columns:
+      - name: sk_id
+        description: "Surrogate Key da dim_situacoes (identificador_matriz_filial,situacao_cadastral,motivo_situacao_cadastral,situacao_especial)"
+        data_type: integer
+        constraints:
+          - type: unique
+          - type: not_null
+
+      - name: codigo_identificador_matriz_filial
+        description: "Código de Matriz ou Filial."
+        data_type: tinyint
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('int_tipos_estabelecimentos')
+                field: codigo
+
+      - name: identificador_matriz_filial
+        description: "Descrição de Matriz ou Filial."
+        data_type: varchar
+        constraints:
+          - type: not_null
+        
+      - name: codigo_situacao_cadastral
+        description: "Código da situação cadastral do estabelecimento."
+        data_type: tinyint
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('int_situacoes_cadastrais')
+                field: codigo
+
+      - name: situacao_cadastral
+        description: "Descrição da situação cadastral do estabelecimento."
+        data_type: varchar
+        constraints:
+          - type: not_null
+        
+      - name: codigo_motivo_situacao_cadastral
+        description: "Código do motivo da situação cadastral do estabelecimento."
+        data_type: smallint
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('int_situacoes_cadastrais_motivos')
+                field: codigo
+
+      - name: motivo_situacao_cadastral
+        description: "Descrição do motivo da situação cadastral do estabelecimento."
+        data_type: varchar
+        constraints:
+          - type: not_null
+        
+      - name: codigo_situacao_especial
+        description: "Código da situação especial do estabelecimento."
+        data_type: tinyint
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('int_situacoes_especiais')
+                field: codigo
+
+      - name: situacao_especial
+        description: "Descrição da situação especial do estabelecimento."
+        data_type: varchar
+        constraints:
+          - type: not_null
+        
+      - name: data_processamento
+        description: "Data da processamento."
+        data_type: timestamptz  
+        constraints:
+          - type: not_null      
 
   - name: dim_socios
     description: "Dimensão de sócios das empresas."
@@ -424,10 +674,14 @@ models:
       - name: ano
         description: "Ano correspondente à data."
         data_type: smallint
-        
+
       - name: mes
-        description: "Número do mês (1 a 12)."
+        description: "Ano correspondente à data."
         data_type: tinyint
+        
+      - name: nome_mes
+        description: "Descrição do mês."
+        data_type: varchar
         
       - name: data_processamento
         description: "Data da processamento."
@@ -455,10 +709,14 @@ models:
       - name: ano
         description: "Ano correspondente à data."
         data_type: smallint
-        
+      
       - name: mes
-        description: "Número do mês (1 a 12)."
+        description: "Ano correspondente à data."
         data_type: tinyint
+
+      - name: nome_mes
+        description: "Descrição do mês."
+        data_type: varchar
         
       - name: data_processamento
         description: "Data da processamento."
@@ -486,10 +744,14 @@ models:
       - name: ano
         description: "Ano correspondente à data."
         data_type: smallint
-        
+      
       - name: mes
-        description: "Número do mês (1 a 12)."
+        description: "Ano correspondente à data."
         data_type: tinyint
+
+      - name: nome_mes
+        description: "Descrição do mês."
+        data_type: varchar
         
       - name: data_processamento
         description: "Data da processamento."
@@ -519,137 +781,20 @@ models:
       - name: ano
         description: "Ano correspondente à data."
         data_type: smallint
-        
+      
       - name: mes
-        description: "Número do mês (1 a 12)."
+        description: "Ano correspondente à data."
         data_type: tinyint
+        
+      - name: nome_mes
+        description: "Descrição do mês."
+        data_type: varchar
         
       - name: data_processamento
         description: "Data da processamento."
         data_type: timestamptz  
         constraints:
           - type: not_null
-
-  - name: fact_empresas
-    description: "Tabela fato empresas."
-    columns:
-      - name: sk_empresa
-        description: "Surrogate Key da fact_empresas."
-        data_type: integer
-        constraints:
-          - type: unique
-          - type: not_null
-        data_tests:
-          - relationships:
-                arguments:
-                  to: ref('dim_empresas')
-                  field: sk_id
-
-      - name: capital_social
-        description: "Capital social da empresa."
-        data_type: decimal(15,2)
-        constraints:
-          - type: not_null
-
-      - name: qtd_estabelecimentos
-        description: "Quantidade de estabelecimentos da empresa."
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_matrizes
-        description: "Quantidade de matrizes da empresa."
-        data_type: tinyint
-        constraints:          
-          - type: not_null                
-          
-      - name: qtd_filiais
-        description: "Quantidade de filiais da empresa."
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_situacao_nulas
-        description: "Quantidade de estabelecimentos nulos da empresa."
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_situacao_ativas
-        description: "Quantidade de estabelecimentos ativos da empresa."
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_situacao_suspensas
-        description: "Quantidade de estabelecimentos suspensos da empresa."
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_situacao_inaptas
-        description: "Quantidade de estabelecimentos inaptos da empresa."
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_situacao_baixadas
-        description: "Quantidade de estabelecimentos baixados da empresa."
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_socios
-        description: "Quantidade de socios da empresa."
-        data_type: smallint
-        
-      - name: qtd_socios_pf
-        description: "Quantidade de socios to tipo pessoa física da empresa."
-        data_type: smallint
-        
-      - name: qtd_socios_pj
-        description: "Quantidade de socios to tipo pessoa jurídica da empresa."
-        data_type: smallint
-        
-      - name: qtd_socios_estrangeiro
-        description: "Quantidade de socios to estrangeiros da empresa."
-        data_type: smallint
-        
-      - name: is_me
-        description: "Flag binária para o porte do tipo ME da empresa."
-        data_type: tinyint
-        constraints:          
-          - type: not_null
-
-      - name: is_pp
-        description: "Flag binária para o porte do tipo PP da empresa."
-        data_type: tinyint
-        constraints:          
-          - type: not_null
-
-      - name: is_demais
-        description: "Flag binária para o porte do tipo DEMAIS da empresa."
-        data_type: tinyint
-        constraints:          
-          - type: not_null  
-
-      - name: is_simples
-        description: "Flag binária para empres optante pelo SIMPLES NACIONAL."
-        data_type: tinyint
-        constraints:          
-          - type: not_null
-
-      - name: is_mei
-        description: "Flag binária para o tipo de empresa que não é MEI."
-        data_type: tinyint
-        constraints:          
-          - type: not_null
-
-      - name: data_processamento
-        description: "Data da processamento."
-        data_type: timestamptz  
-        constraints:
-          - type: not_null       
 
   - name: fact_estabelecimentos
     description: "Tabela fato para estabelecimentos."
@@ -710,6 +855,17 @@ models:
               to: ref('int_tempo_situacoes_cadastrais')
               field: sk_id
 
+    - name: sk_situacoes
+      description: "SK da dim_situacoes"
+      data_type: integer
+      constraints:
+        - type: not_null
+      data_tests:
+        - relationships:
+            arguments:
+              to: ref('dim_situacoes')
+              field: sk_id
+
     - name: sk_localidades
       description: "SK da dim_localidades."
       data_type: integer
@@ -726,24 +882,12 @@ models:
       data_type: varchar
       constraints:
         - type: unique
-        - type: not_null
-
-    - name: descricao_matriz_filial
-      description: "Descrição MATRIZ/FILIAL."
-      data_type: varchar
+        - type: not_null    
 
     - name: nome_fantasia
       description: "Nome fantasia do estabelecimento."
       data_type: varchar   
-
-    - name: situacao_cadastral
-      description: "Descrição da situação cadatral."
-      data_type: varchar
-
-    - name: motivo_situacao_cadastral
-      description: "Descrição do motivo da situação cadastral."
-      data_type: varchar   
-
+      
     - name: logradouro
       description: "Endereço do estabelecimento."
       data_type: varchar
@@ -780,44 +924,74 @@ models:
       description: "Endereço eletrônico."
       data_type: varchar
 
-    - name: qtd_matrizes    
-      description: "Quantidade de estabelecimentos do tipo MATRIZ para o SUM()."
+    - name: is_matriz    
+      description: "Flag binária para matriz."
       data_type: tinyint
       constraints:
         - type: not_null
 
-    - name: qtd_filiais
-      description: "Quantidade de estabelecimentos do tipo FILIAL para o SUM()."
+    - name: is_filial
+      description: "Flag binária para filial."
       data_type: tinyint
       constraints:
         - type: not_null
 
-    - name: qtd_nulas
-      description: "Quantidade de estabelecimentos que estão com situação NULA para o SUM()."
+    - name: is_me
+      description: "Flag binária para Micro Empresa."
       data_type: tinyint
       constraints:
         - type: not_null
 
-    - name: qtd_ativas
-      description: "Quantidade de estabelecimentos que estão com situação ATIVA para o SUM()."
+    - name: is_epp
+      description: "Flag binária para Pequeno Porte."
       data_type: tinyint
       constraints:
         - type: not_null
 
-    - name: qtd_suspensas
-      description: "Quantidade de estabelecimentos que estão com situação SUSPENSA para o SUM()."
+    - name: is_demais
+      description: "Flag binária para Demais."
+      data_type: tinyint
+      constraints:
+        - type: not_null
+
+    - name: is_simples
+      description: "Flag binária para optante pelo simples nacional."
+      data_type: tinyint
+      constraints:
+        - type: not_null
+
+    - name: is_mei
+      description: "Flag binária para micro empreendedor individual."
+      data_type: tinyint
+      constraints:
+        - type: not_null
+
+    - name: is_nula
+      description: "Flag binária para situação NULA."
+      data_type: tinyint
+      constraints:
+        - type: not_null
+
+    - name: is_ativa
+      description: "Flag binária para situação ATIVA."
+      data_type: tinyint
+      constraints:
+        - type: not_null
+
+    - name: is_suspensa
+      description: "Flag binária para situação SUSPENSA."
       data_type: tinyint  
       constraints:
         - type: not_null
 
-    - name: qtd_inaptas
-      description: "Quantidade de estabelecimentos que estão com situação INAPTA para o SUM()."
+    - name: is_inapta
+      description: "Flag binária para situação INAPTA."
       data_type: tinyint  
       constraints:
         - type: not_null
 
-    - name: qtd_baixadas
-      description: "Quantidade de estabelecimentos que estão com situação BAIXADA para o SUM()."
+    - name: is_baixada
+      description: "Flag binária para situação BAIXADA."
       data_type: tinyint  
       constraints:
         - type: not_null
@@ -834,13 +1008,23 @@ models:
       - name: sk_socio
         description: "Surrogate Key da fact_socios."
         data_type: integer
-        constraints:
-          - type: unique
+        constraints:          
           - type: not_null
         data_tests:
           - relationships:
               arguments:
-                to: ref('int_socios')
+                to: ref('dim_socios')
+                field: sk_id
+
+      - name: sk_empresa
+        description: "Surrogate Key da dim_empresas."
+        data_type: integer
+        constraints:          
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_empresas')
                 field: sk_id
 
       - name: sk_tempo_entrada_sociedade

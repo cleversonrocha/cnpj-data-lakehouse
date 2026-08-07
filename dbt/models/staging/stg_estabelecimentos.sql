@@ -7,8 +7,11 @@
 SELECT    
     column00 AS cnpj_basico,
     column01 AS cnpj_ordem,
-    column02 AS cnpj_dv,        
-    CAST(column03 AS TINYINT) AS identificador_matriz_filial,
+    column02 AS cnpj_dv,
+    CASE 
+        WHEN column00 = '08314885' AND column01 = '0051' AND column02 = '74' THEN CAST(2 AS TINYINT)
+        ELSE CAST(column03 AS TINYINT)
+    END AS identificador_matriz_filial,
     column04 AS nome_fantasia,
     CAST(column05 AS TINYINT) AS situacao_cadastral,    
     TRY_CAST(try_strptime(column06, '%Y%m%d') AS DATE) AS data_situacao_cadastral,            

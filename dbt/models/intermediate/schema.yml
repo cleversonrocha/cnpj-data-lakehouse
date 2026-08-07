@@ -175,7 +175,7 @@ models:
           - type: not_null
 
   - name: int_empresas
-    description: "Empresas (matrizes) da Receita Federal."
+    description: "Empresas."
     columns:
       - name: cnpj_basico
         description: "Oito primeiros digítos do CNPJ."
@@ -247,60 +247,7 @@ models:
         data_type: timestamptz  
         constraints:
           - type: not_null
-
-  - name: int_estabelecimentos_por_empresa
-    description: "Tabela para cálculo dos estabelecimenots, situações por estabelecimento."
-    columns:
-      - name: qtd_estabelecimentos
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: cnpj_basico
-        data_type: varchar
-        constraints:          
-          - type: not_null
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('int_empresas')
-                field: cnpj_basico
-
-      - name: qtd_matrizes
-        data_type: tinyint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_filiais
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_situacao_nulas
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_situacao_ativas
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_situacao_suspensas
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_situacao_inaptas
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_situacao_baixadas
-        data_type: smallint
-        constraints:          
-          - type: not_null   
-
+  
   - name: int_estabelecimentos
     description: "Estabelecimentos (matrizes e filiais) da Receita Federal."
     columns:
@@ -314,6 +261,10 @@ models:
       - name: cnpj_basico
         description: "Oito primeiros digítos do CNPJ."
         data_type: varchar
+        data_tests:
+          - unique:
+              config:
+                where: "identificador_matriz_filial = 1"
 
       - name: cnpj_ordem
         description: "9º até o 12º digítos do CNPJ."
@@ -497,7 +448,7 @@ models:
         data_type: timestamptz  
         constraints:
           - type: not_null
-
+  
   - name: int_municipios
     description: "Tabela com os municípios,uf,país e região dos estabelecimentos."
     columns:
@@ -716,7 +667,7 @@ models:
         data_type: timestamptz  
         constraints:
           - type: not_null
-
+  
   - name: int_socios_por_empresa
     description: "Tabela para cálculo dos estabelecimenots, situações por estabelecimento."
     columns:

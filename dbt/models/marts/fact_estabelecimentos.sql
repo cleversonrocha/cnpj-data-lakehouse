@@ -6,19 +6,14 @@
 
 SELECT
     e.sk_id AS sk_estabelecimento,
-    em.sk_id AS sk_empresa,
-    tia.sk_id AS sk_tempo_inicio_atividade,
-    COALESCE(tse.sk_id,-1) AS sk_tempo_situacoes_especiais,
-    COALESCE(tsc.sk_id,-1) AS sk_tempo_situacoes_cadastrais,
-    CAST(DENSE_RANK() OVER(ORDER BY e.municipio,e.cidade_exterior,e.uf,e.pais) AS INTEGER) AS sk_localidades,
-    SUBSTR(e.cnpj_basico, 1, 2) || '.' || SUBSTR(e.cnpj_basico, 3, 3) || '.' || SUBSTR(e.cnpj_basico, 6, 3) || '/' || e.cnpj_ordem || '-' || e.cnpj_dv AS cnpj_completo,
-    CASE 
-        WHEN e.identificador_matriz_filial = 1 THEN 'MATRIZ'
-        WHEN e.identificador_matriz_filial = 2 THEN 'FILIAL'
-    END AS descricao_matriz_filial,
+    em.sk_id AS sk_empresa,    
+    COALESCE(CAST(STRFTIME('%Y%m%d', e.data_inicio_atividade) AS INTEGER),-1) AS sk_tempo_inicio_atividade,    
+    COALESCE(CAST(STRFTIME('%Y%m%d', e.data_situacao_especial) AS INTEGER),-1) AS sk_tempo_situacoes_especiais,
+    COALESCE(CAST(STRFTIME('%Y%m%d', e.data_situacao_cadastral) AS INTEGER),-1) AS sk_tempo_situacoes_cadastrais,    
+    s.sk_id AS sk_situacoes,
+    l.sk_id AS sk_localidades,
+    SUBSTR(e.cnpj_basico, 1, 2) || '.' || SUBSTR(e.cnpj_basico, 3, 3) || '.' || SUBSTR(e.cnpj_basico, 6, 3) || '/' || e.cnpj_ordem || '-' || e.cnpj_dv AS cnpj_completo,    
     e.nome_fantasia,    
-    sc.descricao AS situacao_cadastral,
-    scm.descricao AS motivo_situacao_cadastral,
     e.tipo_logradouro || ' ' || e.logradouro AS logradouro,    
     e.numero,    
     e.complemento,
@@ -61,18 +56,26 @@ SELECT
             END
     END AS fax,  
     e.email,
-    CAST(CASE WHEN e.identificador_matriz_filial = 1 THEN 1 ELSE 0 END AS TINYINT) AS qtd_matrizes,
-    CAST(CASE WHEN e.identificador_matriz_filial = 2 THEN 1 ELSE 0 END AS TINYINT) AS qtd_filiais,    
-    CAST(CASE WHEN e.situacao_cadastral = 1 THEN 1 ELSE 0 END AS TINYINT) AS qtd_nulas,
-    CAST(CASE WHEN e.situacao_cadastral = 2 THEN 1 ELSE 0 END AS TINYINT) AS qtd_ativas,
-    CAST(CASE WHEN e.situacao_cadastral = 3 THEN 1 ELSE 0 END AS TINYINT) AS qtd_suspensas,
-    CAST(CASE WHEN e.situacao_cadastral = 4 THEN 1 ELSE 0 END AS TINYINT) AS qtd_inaptas,
-    CAST(CASE WHEN e.situacao_cadastral = 8 THEN 1 ELSE 0 END AS TINYINT) AS qtd_baixadas,        
+    CAST(CASE WHEN e.identificador_matriz_filial = 1 THEN 1 ELSE 0 END AS TINYINT) AS is_matriz,
+    CAST(CASE WHEN e.identificador_matriz_filial = 2 THEN 1 ELSE 0 END AS TINYINT) AS is_filial,    
+    CAST(CASE WHEN em.codigo_porte_empresa = 1 THEN 1 ELSE 0 END AS TINYINT) AS is_me,
+    CAST(CASE WHEN em.codigo_porte_empresa = 3 THEN 1 ELSE 0 END AS TINYINT) AS is_epp,
+    CAST(CASE WHEN em.codigo_porte_empresa = 5 THEN 1 ELSE 0 END AS TINYINT) AS is_demais,
+    CAST(CASE WHEN em.opcao_simples = 'S' THEN 1 ELSE 0 END AS TINYINT) AS is_simples,    
+    CAST(CASE WHEN em.opcao_mei = 'S' THEN 1 ELSE 0 END AS TINYINT) AS is_mei,
+    CAST(CASE WHEN e.situacao_cadastral = 1 THEN 1 ELSE 0 END AS TINYINT) AS is_nula,
+    CAST(CASE WHEN e.situacao_cadastral = 2 THEN 1 ELSE 0 END AS TINYINT) AS is_ativa,
+    CAST(CASE WHEN e.situacao_cadastral = 3 THEN 1 ELSE 0 END AS TINYINT) AS is_suspensa,
+    CAST(CASE WHEN e.situacao_cadastral = 4 THEN 1 ELSE 0 END AS TINYINT) AS is_inapta,
+    CAST(CASE WHEN e.situacao_cadastral = 8 THEN 1 ELSE 0 END AS TINYINT) AS is_baixada,
     NOW() AS data_processamento
 FROM {{ ref('int_estabelecimentos') }} e
-JOIN {{ ref('int_situacoes_cadastrais') }} sc ON sc.codigo = e.situacao_cadastral
-LEFT JOIN {{ ref('dim_tempo_situacoes_cadastrais') }} tsc ON tsc.data_referencia = e.data_situacao_cadastral
-JOIN {{ ref('int_situacoes_cadastrais_motivos') }} scm ON scm.codigo = e.motivo_situacao_cadastral
-JOIN {{ ref('dim_tempo_inicio_atividades') }} tia ON tia.data_referencia = e.data_inicio_atividade
-LEFT JOIN {{ ref('dim_tempo_situacoes_especiais') }} tse ON tse.data_referencia = e.data_situacao_especial
 JOIN {{ ref('dim_empresas') }} em ON em.cnpj_basico = e.cnpj_basico
+JOIN {{ ref('dim_situacoes') }} s ON s.codigo_identificador_matriz_filial = e.identificador_matriz_filial
+    AND s.codigo_situacao_cadastral = e.situacao_cadastral
+    AND s.codigo_motivo_situacao_cadastral = e.motivo_situacao_cadastral
+    AND s.codigo_situacao_especial = e.situacao_especial
+JOIN {{ ref('dim_localidades') }} l ON l.codigo_municipio = e.municipio
+    AND l.codigo_cidade_exterior = e.cidade_exterior
+    AND l.codigo_uf = e.uf
+    AND l.codigo_pais = e.pais
