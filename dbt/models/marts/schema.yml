@@ -287,6 +287,74 @@ models:
         constraints:
           - type: not_null
 
+  - name: dim_contatos
+    description: "Dimensão de contatos dos estabelecimentos."
+    columns:
+      - name: sk_id
+        description: "Surrogate Key da dim_contatos"
+        data_type: integer
+        constraints:
+          - type: unique
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('int_estabelecimentos')
+                field: sk_id
+
+      - name: cnpj_completo
+        description: "CNPJ completo com máscara."
+        data_type: varchar
+        constraints:
+          - type: unique
+          - type: not_null    
+
+      - name: nome_fantasia
+        description: "Nome fantasia do estabelecimento."
+        data_type: varchar   
+        
+      - name: logradouro
+        description: "Endereço do estabelecimento."
+        data_type: varchar
+
+      - name: numero
+        description: "Número do endereço."
+        data_type: varchar
+
+      - name: complemento
+        description: "Comeplemento do endereço."
+        data_type: varchar
+
+      - name: bairro
+        description: "Bairro do endereço."
+        data_type: varchar
+
+      - name: cep
+        description: "Códido de endereçamento postal."
+        data_type: varchar       
+
+      - name: telefone_1
+        description: "Telefone com ddd."
+        data_type: varchar
+      
+      - name: telefone_2
+        description: "Telefone com ddd."
+        data_type: varchar
+      
+      - name: fax
+        description: "Fax com ddd."
+        data_type: varchar
+
+      - name: email
+        description: "Endereço eletrônico."
+        data_type: varchar
+
+      - name: data_processamento
+        description: "Data da processamento."
+        data_type: timestamptz  
+        constraints:
+          - type: not_null
+
   - name: dim_empresas
     description: "Dimensão de empresas (matrizes) da Receita Federal."
     columns:
@@ -876,53 +944,6 @@ models:
             arguments:
               to: ref('dim_localidades')
               field: sk_id
-
-    - name: cnpj_completo
-      description: "CNPJ completo com máscara."
-      data_type: varchar
-      constraints:
-        - type: unique
-        - type: not_null    
-
-    - name: nome_fantasia
-      description: "Nome fantasia do estabelecimento."
-      data_type: varchar   
-      
-    - name: logradouro
-      description: "Endereço do estabelecimento."
-      data_type: varchar
-
-    - name: numero
-      description: "Número do endereço."
-      data_type: varchar
-
-    - name: complemento
-      description: "Comeplemento do endereço."
-      data_type: varchar
-
-    - name: bairro
-      description: "Bairro do endereço."
-      data_type: varchar
-
-    - name: cep
-      description: "Códido de endereçamento postal."
-      data_type: varchar       
-
-    - name: telefone_1
-      description: "Telefone com ddd."
-      data_type: varchar
-    
-    - name: telefone_2
-      description: "Telefone com ddd."
-      data_type: varchar
-    
-    - name: fax
-      description: "Fax com ddd."
-      data_type: varchar
-
-    - name: email
-      description: "Endereço eletrônico."
-      data_type: varchar
 
     - name: is_matriz    
       description: "Flag binária para matriz."
