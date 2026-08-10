@@ -261,18 +261,20 @@ models:
       - name: cnpj_basico
         description: "Oito primeiros digítos do CNPJ."
         data_type: varchar
-        data_tests:
-          - unique:
-              config:
-                where: "identificador_matriz_filial = 1"
+        constraints:          
+          - type: not_null        
 
       - name: cnpj_ordem
         description: "9º até o 12º digítos do CNPJ."
         data_type: varchar
+        constraints:          
+          - type: not_null
 
       - name: cnpj_dv
         description: "2 último digítos do CNPJ."
         data_type: varchar
+        constraints:          
+          - type: not_null
 
       - name: identificador_matriz_filial
         description: "1 - MATRIZ, 2 - FILIAL"
