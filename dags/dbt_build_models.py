@@ -93,6 +93,6 @@ def dbt_build_models():
 
         print("🚀 Todos os ficheiros da camada Gold (incluindo os maiores de 5GB) foram sincronizados!")
     
-    dbt_build(ano_mes) >> upload_minio_to_databricks_volume('bronze',['raw'],ano_mes) >> upload_minio_to_databricks_volume('silver',['raw','cleaned'],ano_mes) >> upload_minio_to_databricks_volume('gold',["bridge", "dim", "fact", "int"],ano_mes)
+    dbt_build(ano_mes) >> upload_minio_to_databricks_volume('bronze',['raw'],ano_mes) >> upload_minio_to_databricks_volume('silver',['raw','cleaned'],ano_mes) >> upload_minio_to_databricks_volume('gold',["bridge", "dim", "fact", "int", "agg"],ano_mes)
 
 dag_execucao = dbt_build_models()
