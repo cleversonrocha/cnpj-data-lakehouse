@@ -13,6 +13,3 @@ config/
 # Logs e banco de dados do Airflow
 logs/
 postgres-db-volume/
-
-# Power BI
-power_bi/*.pbix
