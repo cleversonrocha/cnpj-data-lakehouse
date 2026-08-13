@@ -779,42 +779,7 @@ models:
         data_type: timestamptz  
         constraints:
           - type: not_null   
-
-  - name: dim_tempo_entrada_sociedade
-    description: "Dimensão de tempo agregada a nível mensal, gerada a partir das datas de entrada na sociedade dos sócios."
-    columns:
-      - name: sk_id
-        description: "Chave substituta (Surrogate Key) formatada como número inteiro (YYYYMMDD)."
-        data_type: integer  
-        constraints:
-          - type: unique
-          - type: not_null
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('int_tempo_entrada_sociedade')
-                field: sk_id        
-
-      - name: data_referencia
-        description: "Data de referência correspondente à chave substituta."        
-        data_type: date  
-                
-      - name: ano
-        description: "Ano correspondente à data."
-        data_type: smallint
-
-      - name: mes
-        description: "Ano correspondente à data."
-        data_type: tinyint
-        
-      - name: nome_mes
-        description: "Descrição do mês."
-        data_type: varchar
-        
-      - name: data_processamento
-        description: "Data da processamento."
-        data_type: timestamptz  
-        
+          
   - name: dim_tempo_inicio_atividades
     description: "Dimensão de tempo agregada a nível mensal, gerada a partir das datas de início da atividade dos estabelecimentos."
     columns:
