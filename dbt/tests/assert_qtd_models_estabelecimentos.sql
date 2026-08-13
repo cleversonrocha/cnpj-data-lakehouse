@@ -9,6 +9,11 @@ qtd_intermediate AS (
         COUNT(cnpj_basico) as qtd
     FROM {{ ref('int_estabelecimentos') }}    
 ),
+qtd_dim_cadastro AS (
+    SELECT        
+        COUNT(sk_id) as qtd
+    FROM {{ ref('dim_cadastro') }}    
+),
 qtd_marts AS (
     SELECT        
         COUNT(sk_estabelecimento) as qtd
@@ -18,8 +23,10 @@ qtd_marts AS (
 SELECT    
     qtd_staging.qtd,
     qtd_intermediate.qtd,
+    qtd_dim_cadastro.qtd,
     qtd_marts.qtd
 FROM qtd_staging
 CROSS JOIN qtd_intermediate
+CROSS JOIN qtd_dim_cadastro
 CROSS JOIN qtd_marts
-WHERE qtd_staging.qtd != qtd_intermediate.qtd OR qtd_intermediate.qtd != qtd_marts.qtd
+WHERE qtd_staging.qtd != qtd_intermediate.qtd OR qtd_intermediate.qtd != qtd_dim_cadastro.qtd OR qtd_dim_cadastro.qtd != qtd_marts.qtd

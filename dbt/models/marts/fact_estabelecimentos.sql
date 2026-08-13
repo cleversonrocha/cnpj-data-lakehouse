@@ -5,20 +5,20 @@
 ) }}
 
 SELECT
-    e.sk_id AS sk_estabelecimento,
-    em.sk_id AS sk_empresa,    
+    e.sk_id AS sk_estabelecimento,        
     COALESCE(CAST(STRFTIME('%Y%m%d', e.data_inicio_atividade) AS INTEGER),-1) AS sk_tempo_inicio_atividade,    
     COALESCE(CAST(STRFTIME('%Y%m%d', e.data_situacao_especial) AS INTEGER),-1) AS sk_tempo_situacoes_especiais,
     COALESCE(CAST(STRFTIME('%Y%m%d', e.data_situacao_cadastral) AS INTEGER),-1) AS sk_tempo_situacoes_cadastrais,    
     s.sk_id AS sk_situacoes,
     l.sk_id AS sk_localidades,    
+    nj.sk_id AS sk_naturezas_juridicas,
     CAST(CASE WHEN e.identificador_matriz_filial = 1 THEN 1 ELSE 0 END AS TINYINT) AS is_matriz,
     CAST(CASE WHEN e.identificador_matriz_filial = 2 THEN 1 ELSE 0 END AS TINYINT) AS is_filial,    
-    CAST(CASE WHEN em.codigo_porte_empresa = 1 THEN 1 ELSE 0 END AS TINYINT) AS is_me,
-    CAST(CASE WHEN em.codigo_porte_empresa = 3 THEN 1 ELSE 0 END AS TINYINT) AS is_epp,
-    CAST(CASE WHEN em.codigo_porte_empresa = 5 THEN 1 ELSE 0 END AS TINYINT) AS is_demais,
-    CAST(CASE WHEN em.opcao_simples = 'S' THEN 1 ELSE 0 END AS TINYINT) AS is_simples,
-    CAST(CASE WHEN em.opcao_mei = 'S' THEN 1 ELSE 0 END AS TINYINT) AS is_mei,
+    CAST(CASE WHEN dc.codigo_porte_empresa = 1 THEN 1 ELSE 0 END AS TINYINT) AS is_me,
+    CAST(CASE WHEN dc.codigo_porte_empresa = 3 THEN 1 ELSE 0 END AS TINYINT) AS is_epp,
+    CAST(CASE WHEN dc.codigo_porte_empresa = 5 THEN 1 ELSE 0 END AS TINYINT) AS is_demais,
+    CAST(CASE WHEN dc.opcao_simples = 'S' THEN 1 ELSE 0 END AS TINYINT) AS is_simples,
+    CAST(CASE WHEN dc.opcao_mei = 'S' THEN 1 ELSE 0 END AS TINYINT) AS is_mei,
     CAST(CASE WHEN e.situacao_cadastral = 1 THEN 1 ELSE 0 END AS TINYINT) AS is_nula,
     CAST(CASE WHEN e.situacao_cadastral = 2 THEN 1 ELSE 0 END AS TINYINT) AS is_ativa,
     CAST(CASE WHEN e.situacao_cadastral = 3 THEN 1 ELSE 0 END AS TINYINT) AS is_suspensa,
@@ -26,7 +26,8 @@ SELECT
     CAST(CASE WHEN e.situacao_cadastral = 8 THEN 1 ELSE 0 END AS TINYINT) AS is_baixada,
     NOW() AS data_processamento
 FROM {{ ref('int_estabelecimentos') }} e
-JOIN {{ ref('dim_empresas') }} em ON em.cnpj_basico = e.cnpj_basico
+JOIN {{ ref('dim_cadastro') }} dc ON dc.sk_id = e.sk_id
+JOIN {{ ref('dim_naturezas_juridicas') }} nj ON nj.codigo = dc.codigo_natureza_juridica
 JOIN {{ ref('dim_situacoes') }} s ON s.codigo_identificador_matriz_filial = e.identificador_matriz_filial
     AND s.codigo_situacao_cadastral = e.situacao_cadastral
     AND s.codigo_motivo_situacao_cadastral = e.motivo_situacao_cadastral

@@ -9,14 +9,6 @@ qtd_intermediate AS (
         COUNT(cnpj_basico) as qtd
     FROM {{ ref('int_empresas') }}    
 ),
-qtd_marts AS (
-    SELECT COUNT(*) AS qtd FROM (
-        SELECT        
-            sk_empresa
-        FROM {{ ref('fact_estabelecimentos') }}
-        GROUP BY sk_empresa
-    )    
-),
 qtd_nao_qualificadas AS (
     SELECT
         COUNT(cnpj_basico) AS qtd
@@ -25,11 +17,9 @@ qtd_nao_qualificadas AS (
 
 SELECT    
     qtd_staging.qtd,
-    qtd_intermediate.qtd,
-    qtd_marts.qtd,
+    qtd_intermediate.qtd,    
     qtd_nao_qualificadas.qtd
 FROM qtd_staging
 CROSS JOIN qtd_intermediate
-CROSS JOIN qtd_marts
 CROSS JOIN qtd_nao_qualificadas
-WHERE (qtd_staging.qtd - qtd_nao_qualificadas.qtd) != qtd_intermediate.qtd OR qtd_intermediate.qtd != qtd_marts.qtd
+WHERE (qtd_staging.qtd - qtd_nao_qualificadas.qtd) != qtd_intermediate.qtd

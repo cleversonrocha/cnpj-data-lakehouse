@@ -62,6 +62,74 @@ models:
         constraints:
           - type: not_null
 
+  - name: agg_fact_estabelecimentos_socios
+    description: "Agregação da quantidade de sócios por estabelecimento."
+    columns:
+      - name: sk_estabelecimento
+        description: "SK do estabelecimento."
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_cadastro')
+                field: sk_id
+
+      - name: total_pf
+        description: "Quantidade de sócios do tipo PESSOA FÍSICA."
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+      - name: total_pj
+        description: "Quantidade de sócios do tipo PESSOA JURÍDICA."
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+      - name: total_estrangeiro
+        description: "Quantidade de sócios do tipo ESTRANGEIRO."
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+      - name: total_socios
+        description: "Quantidade total de sócios."
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+      - name: rank_pf
+        description: "Ranking do estabelecimento em relação a quantidade de sócios do tipo PESSOA FÍSICA."
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+      - name: rank_pj
+        description: "Ranking do estabelecimento em relação a quantidade de sócios do tipo PESSOA JURÍDICA."
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+      - name: rank_estrangeiro
+        description: "Ranking do estabelecimento em relação a quantidade de sócios do tipo ESTRANGEIRO."
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+      - name: rank_total_socios
+        description: "Ranking do estabelecimento em relação a quantidade total de sócios."
+        data_type: smallint
+        constraints:
+          - type: not_null
+
+      - name: data_processamento
+        description: "Data da processamento."
+        data_type: timestamptz  
+        constraints:
+          - type: not_null
+
   - name: agg_fact_estabelecimentos
     description: "Tabela agregada para fact_estabelecimentos"
     columns:
@@ -94,6 +162,16 @@ models:
               arguments:
                 to: ref('dim_localidades')
                 field: sk_id  
+
+      - name: sk_naturezas_juridicas
+        data_type: smallint
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_naturezas_juridicas')
+                field: sk_id
 
       - name: qtd_matrizes    
         description: "Quantidade de estabelecimentos do tipo MATRIZ."
@@ -135,81 +213,38 @@ models:
         description: "Quantidade de estabelecimentos que estão com a situação BAIXADA."
         data_type: smallint  
         constraints:
+          - type: not_null
+
+      - name: qtd_epp
+        description: "Quantidade de estabelecimentos EPP."
+        data_type: smallint  
+        constraints:
           - type: not_null      
+
+      - name: qtd_me
+        description: "Quantidade de estabelecimentos ME."
+        data_type: smallint  
+        constraints:
+          - type: not_null
+
+      - name: qtd_demais
+        description: "Quantidade de estabelecimentos DEMAIS."
+        data_type: smallint  
+        constraints:
+          - type: not_null
+
+      - name: qtd_mei
+        description: "Quantidade de estabelecimentos MEI."
+        data_type: smallint  
+        constraints:
+          - type: not_null
 
       - name: qtd_estabelecimentos
         description: "Quantidade de estabelecimentos da empresa."
         data_type: smallint
         constraints:
           - type: not_null
-
-  - name: agg_socios_ranking
-    description: >
-      Tabela de agregação (grão: 1 linha por empresa) com totais de sócios
-      por tipo (PF, PJ, Estrangeiro) e seus respectivos rankings pré-calculados.
-      Usada para otimizar consultas de "Top N empresas" no Power BI, evitando
-      RANKX em tempo real sobre fact_socios em DirectQuery.
-    columns:
-      - name: sk_empresa
-        description: Chave surrogate da empresa, referencia dim_empresas.sk_id
-        data_type: integer
-        constraints:
-          - type: unique
-          - type: not_null
-        data_tests:          
-          - relationships:
-              arguments:
-                to: ref('dim_empresas')
-                field: sk_id
-
-      - name: total_pf
-        description: Total de sócios pessoa física vinculados à empresa
-        data_type: smallint
-        constraints:
-          - type: not_null          
-
-      - name: total_pj
-        description: Total de sócios pessoa jurídica vinculados à empresa
-        data_type: smallint
-        constraints:
-          - type: not_null
-
-      - name: total_estrangeiro
-        description: Total de sócios estrangeiros vinculados à empresa
-        data_type: smallint
-        constraints:
-          - type: not_null
-
-      - name: total_socios
-        description: Total geral de sócios (PF + PJ + Estrangeiro) por empresa
-        data_type: smallint
-        constraints:
-          - type: not_null
-
-      - name: rank_pf
-        description: Ranking da empresa por total_pf (1 = maior total)
-        data_type: integer
-        constraints:
-          - type: not_null
-
-      - name: rank_pj
-        description: Ranking da empresa por total_pj (1 = maior total)
-        data_type: integer
-        constraints:
-          - type: not_null
-
-      - name: rank_estrangeiro
-        description: Ranking da empresa por total_estrangeiro (1 = maior total)
-        data_type: integer
-        constraints:
-          - type: not_null
-
-      - name: rank_total_socios
-        description: Ranking da empresa por total_socios (1 = maior total)
-        data_type: integer
-        constraints:
-          - type: not_null
-
+  
   - name: bridge_estabelecimentos_cnaes
     description: "Relação many-to-many entre estabelecimentos e CNAEs"    
     constraints:
@@ -251,6 +286,40 @@ models:
         constraints:
           - type: not_null                    
 
+  - name: bridge_estabelecimentos_socios
+    description: "Relação many-to-many entre estabelecimentos e sócios"    
+    constraints:
+      - type: unique
+        columns: [sk_estabelecimento,sk_socio]
+    columns:    
+      - name: sk_estabelecimento
+        description: "SK do estabelecimento."
+        data_type: integer
+        constraints:
+          - type: not_null        
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('int_estabelecimentos')
+                field: sk_id
+
+      - name: sk_socio
+        description: "SK do sócio."
+        data_type: integer        
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_socios')
+                field: sk_id      
+
+      - name: data_processamento
+        description: "Data da processamento."
+        data_type: timestamptz  
+        constraints:
+          - type: not_null
+
   - name: dim_cnaes
     description: "Dimensão de Classificação Nacional de Atividades Econômicas (CNAE)."
     columns:
@@ -287,11 +356,11 @@ models:
         constraints:
           - type: not_null
 
-  - name: dim_contatos
-    description: "Dimensão de contatos dos estabelecimentos."
+  - name: dim_cadastro  
+    description: "Dimensão de cadastro dos estabelecimentos."
     columns:
       - name: sk_id
-        description: "Surrogate Key da dim_contatos"
+        description: "Surrogate Key da dim_cadastro"
         data_type: integer
         constraints:
           - type: unique
@@ -307,11 +376,69 @@ models:
         data_type: varchar
         constraints:
           - type: unique
-          - type: not_null    
+          - type: not_null 
+
+      - name: identificador_matriz_filial
+        description: "Identificador de Matriz ou Filial."
+        data_type: varchar
+        constraints:
+          - type: not_null   
+
+      - name: data_abertura
+        description: "Data de abertura do estabelecimento."
+        data_type: date
+        constraints:
+          - type: not_null
+
+      - name: razao_social
+        description: "Razão social do estabelecimento."
+        data_type: varchar
+        constraints:
+          - type: not_null     
 
       - name: nome_fantasia
         description: "Nome fantasia do estabelecimento."
-        data_type: varchar   
+        data_type: varchar
+
+      - name: codigo_porte_empresa
+        description: "Código do porte da empresa do estabelecimento."
+        data_type: tinyint
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('int_portes_empresas')
+                field: codigo
+
+      - name: porte_empresa
+        description: "Porte da empresa do estabelecimento."
+        data_type: varchar
+        constraints:
+          - type: not_null
+
+      - name: capital_social
+        description: "Capital social da empresa do estabelecimento."
+        data_type: decimal(15,2)
+        constraints:
+          - type: not_null 
+
+      - name: codigo_natureza_juridica
+        description: "Código da natureza jurídica da empresa do estabelecimento."
+        data_type: smallint
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('int_naturezas')
+                field: codigo
+
+      - name: natureza_juridica
+        description: "Natureza jurídica da empresa do estabelecimento."
+        data_type: varchar
+        constraints:
+          - type: not_null  
         
       - name: logradouro
         description: "Endereço do estabelecimento."
@@ -325,13 +452,37 @@ models:
         description: "Comeplemento do endereço."
         data_type: varchar
 
+      - name: cep
+        description: "Códido de endereçamento postal."
+        data_type: varchar 
+
       - name: bairro
         description: "Bairro do endereço."
         data_type: varchar
 
-      - name: cep
-        description: "Códido de endereçamento postal."
-        data_type: varchar       
+      - name: municipio
+        description: "Município do endereço."
+        data_type: varchar
+
+      - name: uf
+        description: "Unidade federativa do endereço."
+        data_type: varchar
+
+      - name: regiao
+        description: "Região do endereço."
+        data_type: varchar
+
+      - name: pais
+        description: "País do endereço."
+        data_type: varchar
+
+      - name: cidade_exterior
+        description: "Cidade no exterior."
+        data_type: varchar
+
+      - name: email
+        description: "Endereço eletrônico."
+        data_type: varchar
 
       - name: telefone_1
         description: "Telefone com ddd."
@@ -345,103 +496,44 @@ models:
         description: "Fax com ddd."
         data_type: varchar
 
-      - name: email
-        description: "Endereço eletrônico."
-        data_type: varchar
-
-      - name: data_processamento
-        description: "Data da processamento."
-        data_type: timestamptz  
-        constraints:
-          - type: not_null
-
-  - name: dim_empresas
-    description: "Dimensão de empresas (matrizes) da Receita Federal."
-    columns:
-      - name: sk_id
-        description: "SK da dim_empresas"
-        data_type: integer
-        constraints:
-          - type: unique
-          - type: not_null
-
-      - name: cnpj_basico
-        description: "Oito primeiros digítos do CNPJ."
-        data_type: varchar
-        constraints:
-          - type: unique
-          - type: not_null
-
-      - name: capital_social
-        description: "Capital social da empresa."
-        data_type: decimal(15,2)
-        constraints:
-          - type: not_null 
-
-      - name: razao_social
-        description: "Razão social da empresa."
-        data_type: varchar
-        constraints:
-          - type: not_null
-
-      - name: codigo_natureza_juridica
-        description: "Código da natureza jurídica da empresa."
-        data_type: smallint
-        constraints:
-          - type: not_null
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('int_naturezas')
-                field: codigo
-
-      - name: natureza_juridica
-        description: "Descricao da natureza jurídica da empresa."
-        data_type: varchar
-        constraints:
-          - type: not_null      
-
-      - name: qualificacao_responsavel
-        description: "Descrição da qualificação do responsável pela empresa."
-        data_type: varchar
-        constraints:
-          - type: not_null
-      
-      - name: codigo_porte_empresa
-        description: "Código do porte da empresa."
-        data_type: tinyint
-        constraints:
-          - type: not_null
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('int_portes_empresas')
-                field: codigo
-
-      - name: porte_empresa
-        description: "Porte da empresa."
-        data_type: varchar
-        constraints:
-          - type: not_null      
-
       - name: ente_federativo_responsavel
-        description: "Descrição do ente federativo da empresa."
+        description: "Ente federativo responsável pelo estabelecimento."
         data_type: varchar
+
+      - name: situacao_cadastral
+        description: "Situação cadastral do estabelecimento."
+        data_type: varchar
+
+      - name: motivo_situacao_cadastral
+        description: "Motivo da situação cadastral do estabelecimento."
+        data_type: varchar
+
+      - name: data_situacao_cadastral
+        description: "Data da situação cadastral do estabelecimento."
+        data_type: date
+
+      - name: situacao_especial
+        description: "Situação especial do estabelecimento."
+        data_type: varchar
+
+      - name: data_situacao_especial
+        description: "Data da situação especial do estabelecimento."
+        data_type: date      
 
       - name: opcao_simples
-        description: "Opção pelo regime simples da empresa."
-        data_type: varchar        
+        description: "Opção pelo Simples Nacional."
+        data_type: varchar
 
       - name: opcao_mei
-        description: "Opção pelo regime MEI da empresa."
-        data_type: varchar            
-        
+        description: "Opção pelo MEI."
+        data_type: varchar
+
       - name: data_processamento
         description: "Data da processamento."
         data_type: timestamptz  
         constraints:
           - type: not_null
-
+  
   - name: dim_localidades
     description: "Localidades dos estabelecimentos"
     columns:
@@ -515,6 +607,42 @@ models:
       - name: pais
         description: "Descrição do País da UF."
         data_type: varchar
+
+      - name: data_processamento
+        description: "Data da processamento."
+        data_type: timestamptz  
+        constraints:
+          - type: not_null
+
+  - name: dim_naturezas_juridicas
+    description: "Dimensão de naturezas jurídicas das empresas."
+    columns:
+      - name: sk_id
+        description: "Surrogate Key da dim_naturezas_juridicas"
+        data_type: smallint
+        constraints:
+          - type: unique
+          - type: not_null
+
+      - name: codigo
+        description: "Código da natureza jurídica."
+        data_type: smallint
+        constraints:
+          - type: unique
+          - type: not_null
+
+      - name: codigo_formatado
+        description: "Código formatado da natureza jurídica."
+        data_type: varchar
+        constraints:
+          - type: unique
+          - type: not_null
+
+      - name: descricao
+        description: "Descrição da natureza jurídica."
+        data_type: varchar
+        constraints:
+          - type: not_null
 
       - name: data_processamento
         description: "Data da processamento."
@@ -877,18 +1005,7 @@ models:
        - relationships:
             arguments:
               to: ref('int_estabelecimentos')
-              field: sk_id
-
-    - name: sk_empresa
-      description: "SK da dim_empresas"
-      data_type: integer
-      constraints:
-        - type: not_null
-      data_tests:
-        - relationships:
-            arguments:
-              to: ref('dim_empresas')
-              field: sk_id
+              field: sk_id   
 
     - name: sk_tempo_inicio_atividade
       description: "SK da dim_tempo"
@@ -943,6 +1060,17 @@ models:
         - relationships:
             arguments:
               to: ref('dim_localidades')
+              field: sk_id
+
+    - name: sk_naturezas_juridicas
+      description: "SK da dim_naturezas_juridicas."
+      data_type: smallint
+      constraints:
+        - type: not_null
+      data_tests:
+        - relationships:
+            arguments:
+              to: ref('dim_naturezas_juridicas')
               field: sk_id
 
     - name: is_matriz    

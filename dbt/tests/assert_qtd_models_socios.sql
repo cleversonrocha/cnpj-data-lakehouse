@@ -8,18 +8,11 @@ qtd_intermediate AS (
     SELECT        
         COUNT(cnpj_basico) as qtd
     FROM {{ ref('int_socios') }}    
-),
-qtd_marts AS (
-    SELECT        
-        COUNT(sk_socio) as qtd
-    FROM {{ ref('fact_socios') }}    
 )
 
 SELECT    
     qtd_staging.qtd,
-    qtd_intermediate.qtd,
-    qtd_marts.qtd
+    qtd_intermediate.qtd
 FROM qtd_staging
 CROSS JOIN qtd_intermediate
-CROSS JOIN qtd_marts
-WHERE qtd_staging.qtd != qtd_intermediate.qtd OR qtd_intermediate.qtd != qtd_marts.qtd
+WHERE qtd_staging.qtd != qtd_intermediate.qtd
