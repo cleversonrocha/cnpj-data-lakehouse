@@ -27,3 +27,6 @@ dbt_meta.db.wal
 # CREDENCIAIS
 # =========================
 dbt_internal_packages/
+
+#Power BI
+power_bi/cnpj_data_lakehouse_databricks_dual.pbix
