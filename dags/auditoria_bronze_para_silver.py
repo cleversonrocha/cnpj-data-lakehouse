@@ -10,7 +10,7 @@ logger = logging.getLogger("airflow.task")
 @dag(
     dag_id='auditoria_bronze_para_silver',
     description='Verifica a quantidade de registros das camadas bronze(zip) e silver(parquet)',
-    start_date=pendulum.datetime(2026, 5, 1, tz="America/Sao_Paulo"),
+    start_date=pendulum.datetime(2026, 8, 1, tz="America/Sao_Paulo"),
     schedule=None,
     catchup=False,
     tags=['auditoria', 'data lakehouse']
@@ -26,8 +26,8 @@ def auditoria_ingestao_bronze_para_silver():
         
     # Lista com todas as entidades a serem auditadas
     ENTIDADES = ['Motivos', 'Qualificacoes', 'Naturezas', 'Paises', 'Cnaes', 'Municipios', 'Socios', 'Empresas', 'Estabelecimentos']
-
-    ano_mes = pendulum.now("America/Sao_Paulo").format("YYYY_MM")     
+    
+    ano_mes = data_interval_start.in_timezone("America/Sao_Paulo").format("YYYY_MM")   
         
     # ==========================================
     # 🦆 INICIALIZAÇÃO DUCKDB
