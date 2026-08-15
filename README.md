@@ -21,7 +21,10 @@ Como minha máquina local atua como o servidor, decidi usar o **Docker** para is
 * **Apache Airflow:** Para agendar e automatizar o download, extração e transformação dos dados.
 * **MinIO:** Para simular o Amazon S3 localmente (criando as camadas de armazenamento separadas do processamento).
 * **DuckDB:** Para o processamento, lendo os CSVs e convertendo para o formato colunar Parquet.
-* **DBT:** Para tratar e modelar os dados []. 
+* **DBT:** Para tratar e modelar os dados.
+A documentação completa do modelo de dados (linhagem, testes, descrições de colunas) 
+gerada pelo dbt está disponível em:
+👉 **[https://cleversonrocha.github.io/cnpj-data-lakehouse](https://cleversonrocha.github.io/cnpj-data-lakehouse)**
 * **Databricks:** Para armazenar os dados em nuvem e apresentar com Power BI.
 
 **Docker Containers:**
