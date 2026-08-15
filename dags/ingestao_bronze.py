@@ -1,5 +1,6 @@
 from airflow.sdk import dag, task
 from airflow.sdk.exceptions import AirflowException
+from airflow.providers.standard.operators.trigger_dagrun import TriggerDagRunOperator
 import pendulum
 import requests
 import zipfile
@@ -18,15 +19,15 @@ MINIO_BUCKET_BRONZE = 'bronze'
 
 @dag(
     dag_id="ingestao_bronze",
-    schedule="@monthly",
-    start_date=pendulum.datetime(2026, 6, 1, tz="America/Sao_Paulo"),
-    catchup=False,
-    tags=["ingestao", "bronze"],
+    schedule='@once',
+    start_date=pendulum.datetime(2026, 8, 1, tz="America/Sao_Paulo"),    
+    is_paused_upon_creation=False,
+    tags=["ingestao", "bronze"]
 )
 def rfb_datalake_ingestion():       
 
     @task
-    def gerar_link_dinamico() -> str:
+    def gerar_link_dinamico(data_interval_start=None) -> str:
 
         url_teste = "https://arquivos.receitafederal.gov.br/public.php/dav/files/YggdBLfdninEJX9/"                
         caminho_certificado = "/opt/airflow/certs/arquivos.receitafederal.gov.br.crt"
@@ -48,8 +49,7 @@ def rfb_datalake_ingestion():
             raise AirflowException(f"Ocorreu um erro inesperado de rede: {e}")
         
         """Gera o link dinâmico baseado no mês atual."""
-        data_execucao = pendulum.now("America/Sao_Paulo")
-        ano_mes_pasta = data_execucao.format("YYYY-MM")
+        ano_mes_pasta = data_interval_start.in_timezone("America/Sao_Paulo").format("YYYY-MM")
         url_direta = f"https://arquivos.receitafederal.gov.br/public.php/dav/files/YggdBLfdninEJX9/{ano_mes_pasta}/?accept=zip"                       
         
         logger.info(f"URL gerada para este mês: {url_direta}")
@@ -161,9 +161,15 @@ def rfb_datalake_ingestion():
         except Exception as e:
             raise AirflowException(f"Ocorreu um erro inesperado: {MINIO_ENDPOINT}")                        
 
+    trigger_silver = TriggerDagRunOperator(
+        task_id="trigger_ingestao_silver",
+        trigger_dag_id="ingestao_silver",        
+        reset_dag_run=True,
+    )
+
     # Ordem de execução
-    link = gerar_link_dinamico()
-    baixar_e_enviar_minio(link)
+    link = gerar_link_dinamico() 
+    baixar_e_enviar_minio(link) >> trigger_silver
     
 # Instanciação da DAG
 dag_execucao = rfb_datalake_ingestion()

@@ -9,18 +9,23 @@ from databricks.sdk import WorkspaceClient
     dag_id="dbt_build_models",
     description='Tratamento dos dados com dbt e gravação no MinIO',
     schedule=None,
-    start_date=pendulum.datetime(2026, 6, 1, tz="America/Sao_Paulo"),
-    catchup=False,
+    is_paused_upon_creation=False,
+    start_date=pendulum.datetime(2026, 8, 1, tz="America/Sao_Paulo"),    
     tags=["transformacao", "dbt"],
 )
 def dbt_build_models():
+    
+    @task
+    def calcular_ano_mes(data_interval_start=None) -> str:
+        ano_mes = data_interval_start.in_timezone("America/Sao_Paulo").format("YYYY_MM")
+        return ano_mes
 
-    ano_mes = pendulum.now("America/Sao_Paulo").format("YYYY_MM")
-    os.environ["DBT_ANO_MES"] = ano_mes
+    ano_mes = calcular_ano_mes()    
 
     @task.bash
     def dbt_build(ano_mes: str) -> str:
         return (
+            f'export DBT_ANO_MES="{ano_mes}" && '
             f'rm -f /opt/airflow/temp/cnpj_data_lakehouse_{ano_mes}.duckdb* && '
             f'cd /opt/airflow/dbt && '
             f'dbt build '            

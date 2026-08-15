@@ -1,5 +1,6 @@
 from airflow.sdk import dag, task
 from airflow.sdk.exceptions import AirflowException
+from airflow.providers.standard.operators.trigger_dagrun import TriggerDagRunOperator
 import pendulum
 import os
 import boto3
@@ -14,12 +15,19 @@ logger = logging.getLogger("airflow.task")
     dag_id="ingestao_silver",
     description='Extração dos arquivos csv compactados e conversão para parquet',
     schedule=None,
-    start_date=pendulum.datetime(2026, 6, 1, tz="America/Sao_Paulo"),
-    catchup=False,
-    tags=["ingestao", "silver"],
-)    
+    is_paused_upon_creation=False,
+    start_date=pendulum.datetime(2026, 8, 1, tz="America/Sao_Paulo"),    
+    tags=["ingestao", "silver"]
+)
 
-def datalake_silver():       
+def datalake_silver():
+
+    @task
+    def calcular_ano_mes(data_interval_start=None) -> str:
+        ano_mes = data_interval_start.in_timezone("America/Sao_Paulo").format("YYYY_MM")
+        return ano_mes
+
+    ano_mes = calcular_ano_mes()
     
     try:            
         endpoint = os.getenv("MINIO_ENDPOINT")
@@ -34,12 +42,10 @@ def datalake_silver():
         )
     except Exception as e:
         raise AirflowException(f"Erro ao configurar o cliente S3: {e}")
-                
-    ano_mes = pendulum.now("America/Sao_Paulo").format("YYYY_MM")
-    os.environ["DBT_ANO_MES"] = ano_mes
+
 
     @task
-    def processar_entidades_unicas(tabela_nome: str, arquivo_zip: str):
+    def processar_entidades_unicas(ano_mes: str, tabela_nome: str, arquivo_zip: str):
         logger.info(f"Iniciando processamento da tabela de forma direta: {tabela_nome.upper()}")        
         
         try:            
@@ -94,6 +100,7 @@ def datalake_silver():
     for tabela in tabelas_para_processar:
         # Usamos o .override() para dar um nome visual único a cada bloco no Airflow
         tarefa_atual = processar_entidades_unicas.override(task_id=f"processar_{tabela['nome']}")(
+            ano_mes=ano_mes,            
             tabela_nome=tabela['nome'],             
             arquivo_zip=tabela['zip']
         )
@@ -106,7 +113,7 @@ def datalake_silver():
         tarefa_anterior = tarefa_atual
     
     @task
-    def processar_entidades_particionadas(entidade_nome: str, prefixo_arquivo: str):
+    def processar_entidades_particionadas(ano_mes: str, entidade_nome: str, prefixo_arquivo: str):
         logger.info(f"Iniciando processamento massivo da entidade: {entidade_nome.upper()}")        
                
         pasta_temp = f"/opt/airflow/temp/{entidade_nome}"
@@ -198,6 +205,7 @@ def datalake_silver():
     for entidade in grandes_entidades:
         # Instancia a tarefa atual
         tarefa_atual = processar_entidades_particionadas.override(task_id=f"unificar_{entidade['nome']}")(
+            ano_mes=ano_mes,
             entidade_nome=entidade['nome'],
             prefixo_arquivo=entidade['prefixo']
         )
@@ -208,5 +216,13 @@ def datalake_silver():
             
         # A tarefa atual passa a ser a "anterior" para a próxima volta do loop
         tarefa_anterior = tarefa_atual
+
+    trigger_dag_dbt_build_models = TriggerDagRunOperator(
+        task_id="trigger_dbt_build_models",
+        trigger_dag_id="dbt_build_models",        
+        reset_dag_run=True,
+    )
+
+    tarefa_anterior >> trigger_dag_dbt_build_models
 
 dag_execucao = datalake_silver()
