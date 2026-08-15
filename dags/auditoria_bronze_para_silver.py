@@ -1,4 +1,5 @@
 from airflow.sdk import dag, task
+from airflow.sdk import get_current_context
 import pendulum
 import duckdb
 import os
@@ -26,8 +27,10 @@ def auditoria_ingestao_bronze_para_silver():
         
     # Lista com todas as entidades a serem auditadas
     ENTIDADES = ['Motivos', 'Qualificacoes', 'Naturezas', 'Paises', 'Cnaes', 'Municipios', 'Socios', 'Empresas', 'Estabelecimentos']
-    
-    ano_mes = data_interval_start.in_timezone("America/Sao_Paulo").format("YYYY_MM")   
+
+    context = get_current_context()
+    dis = context.get("data_interval_start") or pendulum.now("America/Sao_Paulo")
+    ano_mes = dis.in_timezone("America/Sao_Paulo").format("YYYY_MM")    
         
     # ==========================================
     # 🦆 INICIALIZAÇÃO DUCKDB
