@@ -2,8 +2,8 @@ cnpj_data_lakehouse:
   target: dev
   outputs:
     dev:
-      type: duckdb
-      path: "/opt/airflow/temp/cnpj_data_lakehouse_{{ env_var('DBT_ANO_MES') }}.duckdb"
+      type: duckdb            
+      path: "{{ env_var('DUCKDB_PATH', 'D:/docker/cnpj_data_lakehouse_' ~ env_var('DBT_ANO_MES', '2026_08') ~ '.duckdb') }}"
       threads: 1
             
       extensions:
