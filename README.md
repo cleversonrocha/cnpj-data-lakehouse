@@ -75,6 +75,10 @@ Obs.: Uma cópia de toda a estrutura do armazenamento local é gravada também n
 **Modelo Star Schema:**
 ![Modelo Star Schema](imagens/star_schema.png)
 
+**Modelo Star Schema no Power BI com Agregações e Medidas:**
+![Modelo Star Schema Power BI](imagens/power_bi_star_schema.jpg)
+
+
 ### 🗺️ Diagrama da Arquitetura
 
 ![Pipeline de Dados - RFB](imagens/pipeline_rfb.gif)
