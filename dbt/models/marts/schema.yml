@@ -63,9 +63,10 @@ models:
           - type: not_null
 
   - name: agg_fact_estabelecimentos
-    description: "Tabela agregada para fact_estabelecimentos"
+    description: "Tabela agregada para fact_estabelecimentos."
     columns:
       - name: sk_tempo_inicio_atividade
+        description: "Sk da dim_tempo_inicio_atividades."
         data_type: integer
         constraints:
           - type: not_null
@@ -76,6 +77,7 @@ models:
                 field: sk_id
       
       - name: sk_situacoes
+        description: "SK da dim_situacoes"
         data_type: integer
         constraints:
           - type: not_null
@@ -86,6 +88,7 @@ models:
                 field: sk_id
 
       - name: sk_localidades
+        description: "SK da dim_localidades."
         data_type: integer
         constraints:
           - type: not_null
@@ -96,6 +99,7 @@ models:
                 field: sk_id  
 
       - name: sk_naturezas_juridicas
+        description: "SK da dim_naturezas_juridicas."
         data_type: smallint
         constraints:
           - type: not_null
@@ -178,7 +182,7 @@ models:
           - type: not_null
   
   - name: bridge_estabelecimentos_cnaes
-    description: "Relação many-to-many entre estabelecimentos e CNAEs"    
+    description: "Relação many-to-many entre estabelecimentos e CNAEs."    
     constraints:
       - type: unique
         columns: [sk_estabelecimento,sk_cnae]
@@ -213,13 +217,13 @@ models:
             expression: "tipo_cnae IN ('PRINCIPAL', 'SECUNDÁRIO')"
 
       - name: data_processamento
-        description: "Data da processamento."
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null                    
 
   - name: bridge_estabelecimentos_socios
-    description: "Relação many-to-many entre estabelecimentos e sócios"    
+    description: "Relação many-to-many entre estabelecimentos e sócios."    
     constraints:
       - type: unique
         columns: [sk_estabelecimento,sk_socio]
@@ -247,7 +251,7 @@ models:
                 field: sk_id      
 
       - name: data_processamento
-        description: "Data da processamento."
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -283,7 +287,7 @@ models:
           - type: not_null
 
       - name: data_processamento
-        description: "Data da processamento."
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz
         constraints:
           - type: not_null
@@ -461,7 +465,7 @@ models:
         data_type: varchar
 
       - name: data_processamento
-        description: "Data da processamento."
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -541,7 +545,7 @@ models:
         data_type: varchar
 
       - name: data_processamento
-        description: "Data da processamento."
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -577,7 +581,7 @@ models:
           - type: not_null
 
       - name: data_processamento
-        description: "Data da processamento."
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -661,7 +665,7 @@ models:
           - type: not_null
         
       - name: data_processamento
-        description: "Data da processamento."
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null      
@@ -682,7 +686,7 @@ models:
                 field: sk_id
 
       - name: cnpj_basico
-        description: "Oito primeiros digítos do CNPJ."
+        description: "Oito primeiros dígitos do CNPJ."
         data_type: varchar
         constraints:
           - type: not_null
@@ -775,7 +779,7 @@ models:
         data_type: varchar
 
       - name: data_processamento
-        description: "Data da processamento."
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null   
@@ -812,7 +816,7 @@ models:
         data_type: varchar
         
       - name: data_processamento
-        description: "Data da processamento."
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         
   - name: dim_tempo_situacoes_cadastrais
@@ -847,7 +851,7 @@ models:
         data_type: varchar
         
       - name: data_processamento
-        description: "Data da processamento."
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -884,7 +888,7 @@ models:
         data_type: varchar
         
       - name: data_processamento
-        description: "Data da processamento."
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -1043,7 +1047,7 @@ models:
         - type: not_null
 
     - name: data_processamento
-      description: "Data da processamento."
+      description: "Data e hora do processamento dos dados."
       data_type: timestamptz  
       constraints:
         - type: not_null

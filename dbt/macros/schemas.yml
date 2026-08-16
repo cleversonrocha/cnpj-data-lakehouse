@@ -1,0 +1,38 @@
+version: 1
+
+macros:
+  - name: get_ano_mes
+    description: >
+      Retorna o ano/mês de referência da execução atual do pipeline.
+      Se a variável `ano_mes` for passada via `--vars` (ex: `dbt run --vars '{ano_mes: 2026_08}'`),
+      usa esse valor. Caso contrário, usa o mês corrente no formato `YYYY_MM`
+      como fallback, permitindo execução manual sem precisar especificar a competência.
+
+  - name: export_to_s3
+    description: >
+      Gera a instrução SQL `COPY` que exporta o resultado do modelo atual (`this`)
+      para um arquivo Parquet no S3/MinIO, particionado automaticamente pela
+      competência (`ano_mes`) retornada pela macro `get_ano_mes()`. Utilizada como
+      post-hook para persistir as camadas do pipeline no object storage.
+    arguments:
+      - name: bucket_path
+        type: string
+        description: "Caminho do bucket S3/MinIO onde o arquivo será exportado (ex: 's3://gold/fact/2026_08/fact_estabelecimentos.parquet')"
+      - name: file_name
+        type: string
+        description: "Nome do arquivo Parquet de destino, sem extensão (ex: 'fact_estabelecimentos')"
+
+  - name: get_s3_path
+    description: >
+      Monta e retorna a string do caminho S3/MinIO para um arquivo Parquet,
+      particionado automaticamente pela competência (`ano_mes`) obtida via
+      `get_ano_mes()`. Diferente de `export_to_s3`, esta macro retorna apenas
+      a string do caminho (já entre aspas simples, pronta para uso em SQL),
+      sem gerar a instrução `COPY` completa.
+    arguments:
+      - name: base_path
+        type: string
+        description: "Caminho base do bucket S3/MinIO (ex: 's3://gold/fact/2026_08/fact_estabelecimentos.parquet)"
+      - name: file_name
+        type: string
+        description: "Nome do arquivo Parquet de destino, sem extensão"

@@ -169,7 +169,26 @@ models:
         description: "Data em que a empresa entrou em situação especial."
                 
       - name: data_processamento
-        description: "Data e hora em que este registro foi processado na camada Silver."
+        description: "Data e hora do processamento dos dados."
+
+  - name: stg_motivos
+    description: "Tabela contendo os motivos das situações cadastrais."
+    columns:
+      - name: codigo
+        description: "Código do motivo."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: descricao
+        description: "Descrição do motivo."
+        data_tests:
+          - not_null
+
+      - name: data_processamento
+        description: "Data e hora do processamento dos dados."
+        data_tests:
+          - not_null      
 
   - name: stg_municipios  
     description: "Tabela de municípios do Brasil."    

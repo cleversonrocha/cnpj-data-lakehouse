@@ -18,7 +18,7 @@ models:
           - type: not_null
 
       - name: data_processamento
-        description: "Data da processamento."
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -57,7 +57,7 @@ models:
             expression: "tipo_cnae IN ('PRINCIPAL')"
 
       - name: data_processamento
-        description: "Data de processamento"
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:          
           - type: not_null            
@@ -95,7 +95,7 @@ models:
             expression: "tipo_cnae IN ('SECUNDÁRIO')"
 
       - name: data_processamento
-        description: "Data de processamento"
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:          
           - type: not_null
@@ -124,7 +124,7 @@ models:
           - type: not_null
 
       - name: data_processamento
-        description: "Descrição da atividade econômica."
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -169,7 +169,7 @@ models:
           - type: not_null 
 
       - name: data_processamento
-        description: "Data de processamento"
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -178,7 +178,7 @@ models:
     description: "Empresas."
     columns:
       - name: cnpj_basico
-        description: "Oito primeiros digítos do CNPJ."
+        description: "Oito primeiros dígitos do CNPJ."
         data_type: varchar
         constraints:
           - type: unique
@@ -221,7 +221,7 @@ models:
           - type: not_null
 
       - name: data_processamento
-        description: "Data de processamento"
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null                
@@ -243,7 +243,7 @@ models:
           - type: not_null
 
       - name: data_processamento
-        description: "Data de processamento."
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -259,7 +259,7 @@ models:
           - type: not_null
 
       - name: cnpj_basico
-        description: "Oito primeiros digítos do CNPJ."
+        description: "Oito primeiros dígitos do CNPJ."
         data_type: varchar
         constraints:          
           - type: not_null        
@@ -303,9 +303,11 @@ models:
                 field: codigo
 
       - name: data_situacao_cadastral
+        description: "Data da situação cadastral."
         data_type: date  
         
       - name: motivo_situacao_cadastral
+        description: "Motivo da situação cadastral."
         data_type: smallint
         constraints:
           - type: not_null       
@@ -316,6 +318,7 @@ models:
                 field: codigo
 
       - name: cidade_exterior
+        description: "Nome da cidade do exterior."
         data_type: smallint
         constraints:
           - type: not_null       
@@ -326,6 +329,7 @@ models:
                 field: codigo
 
       - name: pais
+        description: "Nome do país."
         data_type: smallint
         constraints:
           - type: not_null       
@@ -336,11 +340,13 @@ models:
                 field: codigo  
 
       - name: data_inicio_atividade
+        description: "Data de início da atividade."
         data_type: date  
         constraints:
           - type: not_null
 
       - name: cnae_fiscal_principal
+        description: "CNAE principal do estabelecimento."
         data_type: varchar
         constraints:
           - type: not_null       
@@ -351,27 +357,35 @@ models:
                 field: codigo
 
       - name: cnae_fiscal_secundaria
+        description: "Lista separada por vírgula dos CNAES secundários do estabelecimento."
         data_type: varchar        
 
       - name: tipo_logradouro
+        description: "Rua, Av... do logradouro."
         data_type: varchar
 
       - name: logradouro
+        description: "Descrição do endereço."
         data_type: varchar
 
       - name: numero
+        description: "Número do endereço."
         data_type: varchar
 
       - name: complemento
+        description: "Complemento do endereço."
         data_type: varchar
 
       - name: bairro
+        description: "Nome do bairro."
         data_type: varchar
 
       - name: cep
+        description: "Código de endereçamento postal do endereço."
         data_type: varchar
 
       - name: uf
+        description: "Código do Estado."
         data_type: tinyint
         constraints:
           - type: not_null       
@@ -382,6 +396,7 @@ models:
                 field: codigo
 
       - name: municipio
+        description: "Código do município."
         data_type: smallint
         constraints:
           - type: not_null       
@@ -392,27 +407,35 @@ models:
                 field: codigo
       
       - name: ddd_1
+        description: "Número do DDD do primeiro telefone."
         data_type: varchar
 
       - name: telefone_1
+        description: "Número do primeiro telefone."
         data_type: varchar
 
       - name: ddd_2
+        description: "Número do DDD do segundo telefone."
         data_type: varchar
 
       - name: telefone_2
+        description: "Número do telefone do segundo telefone."
         data_type: varchar
 
       - name: ddd_fax
+        description: "Número do DDD do FAX."
         data_type: varchar
 
       - name: fax
+        description: "Número do FAX."
         data_type: varchar
 
       - name: email
+        description: "Endereço de email."
         data_type: varchar
 
       - name: situacao_especial
+        description: "Código da situação especial."
         data_type: tinyint        
         data_tests:
           - relationships:
@@ -421,9 +444,11 @@ models:
                 field: codigo
 
       - name: data_situacao_especial
+        description: "Data da situação especial."
         data_type: date  
 
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -447,6 +472,7 @@ models:
           - type: not_null
 
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -468,6 +494,7 @@ models:
           - type: not_null
 
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -495,6 +522,7 @@ models:
           - type: not_null
 
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null      
@@ -516,6 +544,7 @@ models:
           - type: not_null
 
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -543,6 +572,7 @@ models:
           - type: not_null
 
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -564,6 +594,7 @@ models:
           - type: not_null
 
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null      
@@ -572,12 +603,14 @@ models:
     description: "Dados do SIMPLES NACIONAL."
     columns:
       - name: cnpj_basico
+        description: "Oito primeiros dígitos do CNPJ."
         data_type: varchar
         constraints:
           - type: unique
           - type: not_null
 
       - name: opcao_simples
+        description: "Indicador da existência da opção pelo SIMPLES."
         data_type: varchar
         constraints:
           - type: not_null
@@ -585,24 +618,30 @@ models:
             expression: "opcao_simples IN('S','N','EM BRANCO')"
 
       - name: data_opcao_simples
+        description: "Data de opção pelo SIMPLES."
         data_type: date          
 
       - name: data_exclusao_simples
+        description: "Data de exclusão do SIMPLES."
         data_type: date  
 
       - name: opcao_mei
+        description: "Indicador de existência da opção pelo MEI."
         data_type: varchar
         constraints:          
           - type: check
             expression: "opcao_simples IN('S','N','EM BRANCO')"
         
       - name: data_opcao_mei
+        description: "Data de opção pelo MEI."
         data_type: date  
 
       - name: data_exclusao_mei
+        description: "Data de exclusão do MEI."
         data_type: date  
 
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -624,6 +663,7 @@ models:
           - type: not_null
 
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -645,6 +685,7 @@ models:
           - type: not_null
 
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -666,43 +707,11 @@ models:
           - type: not_null
 
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
   
-  - name: int_socios_por_empresa
-    description: "Tabela para cálculo dos estabelecimenots, situações por estabelecimento."
-    columns:
-      - name: cnpj_basico
-        data_type: varchar
-        constraints:          
-          - type: not_null
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('int_empresas')
-                field: cnpj_basico
-
-      - name: qtd_socios
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_socios_pf
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_socios_pj
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
-      - name: qtd_socios_estrangeiro
-        data_type: smallint
-        constraints:          
-          - type: not_null
-
   - name: int_socios
     description: "Sócios das empresas."
     columns:
@@ -714,32 +723,39 @@ models:
           - type: not_null     
 
       - name: cnpj_basico
+        description: "Oito primeiros dígitos do CNPJ."
         data_type: varchar
         constraints:
           - type: not_null
 
       - name: identificador
+        description: "Código identificador do tipo da pessoa Física/Jurídica/Estrangeiro."
         data_type: tinyint
         constraints:
           - type: not_null
 
       - name: nome_razao_social
+        description: "Nome do sócio pessoa física ou a Razão social e/ou Nome empresarial da pessoa jurídica e/ou do Sócio/Razão Social do sócio estrangeiro."
         data_type: varchar
         
       - name: cpf_cnpj
+        description: "CPF ou CNPJ do sócios (Sócio estrangeiro não tem esta informação)."
         data_type: varchar
         
       - name: qualificacao
+        description: "Código da qualificação do sócio. (Presidente,Diretor,Conselheiro de Administração...)."
         data_type: tinyint
         constraints:
           - type: not_null
 
       - name: data_entrada_sociedade
+        description: "Data de entrada na sociedade."
         data_type: date  
         constraints:
           - type: not_null
 
       - name: pais
+        description: "Código do país do sócio."
         data_type: smallint
         data_tests:
           - relationships:
@@ -748,12 +764,15 @@ models:
                 field: codigo
 
       - name: representante_legal
+        description: "Número do CPF do representante legal."
         data_type: varchar
 
       - name: nome_do_representante
+        description: "Nome do representante legal."
         data_type: varchar
 
       - name: qualificacao_representante
+        description: "Qualificação do representante legal."
         data_type: tinyint
         data_tests:
           - relationships:
@@ -762,6 +781,7 @@ models:
                 field: codigo
 
       - name: faixa_etaria_socio
+        description: "Código da faixa etária do sócio."
         data_type: tinyint
         data_tests:
           - relationships:
@@ -770,6 +790,7 @@ models:
                 field: codigo
 
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -778,38 +799,49 @@ models:
     description: "Tabela tempo para fact_socios" 
     columns:
       - name: sk_id
+        description: "SK da int_tempo_entrada_sociedade"
         data_type: integer
         constraints:
           - type: not_null
 
       - name: data_referencia
+        description: "Data de entrada na sociedade."
         data_type: date  
         
       - name: ano
+        description: "Número do Ano."
         data_type: smallint
         
       - name: mes
+        description: "Número do Mês."
         data_type: tinyint
         
       - name: dia
+        description: "Dia."
         data_type: tinyint
         
       - name: trimestre
+        description: "Trimestre."
         data_type: tinyint
         
       - name: semestre
+        description: "Semestre."
         data_type: tinyint
         
       - name: dia_semana_numero
+        description: "Número do dia da semana."
         data_type: tinyint
         
       - name: nome_mes
+        description: "Nome do mês."
         data_type: varchar
         
       - name: nome_dia_semana
+        description: "Nome do dia da semana."
         data_type: varchar
         
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null      
@@ -818,38 +850,49 @@ models:
     description: "Tabela tempo para fact_estabelecimentos" 
     columns:
       - name: sk_id
+        description: "SK da int_tempo_entrada_sociedade"
         data_type: integer
         constraints:
           - type: not_null
 
       - name: data_referencia
+        description: "Data de início da atividade do estabeleicmento."
         data_type: date  
         
       - name: ano
+        description: "Número do Ano."
         data_type: smallint
         
       - name: mes
+        description: "Número do Mês."
         data_type: tinyint
         
       - name: dia
+        description: "Dia."
         data_type: tinyint
         
       - name: trimestre
+        description: "Trimestre."
         data_type: tinyint
         
       - name: semestre
+        description: "Semestre."
         data_type: tinyint
         
       - name: dia_semana_numero
+        description: "Número do dia da semana."
         data_type: tinyint
         
       - name: nome_mes
+        description: "Nome do mês."
         data_type: varchar
         
       - name: nome_dia_semana
+        description: "Nome do dia da semana."
         data_type: varchar
         
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null      
@@ -858,78 +901,100 @@ models:
     description: "Tabela tempo para fact_estabelecimentos" 
     columns:
       - name: sk_id
+        description: "SK da int_tempo_entrada_sociedade"
         data_type: integer
         constraints:
           - type: not_null
 
       - name: data_referencia
+        description: "Data da situação cadastral."
         data_type: date  
         
       - name: ano
+        description: "Número do Ano."
         data_type: smallint
         
       - name: mes
+        description: "Número do Mês."
         data_type: tinyint
         
       - name: dia
+        description: "Dia."
         data_type: tinyint
         
       - name: trimestre
+        description: "Trimestre."
         data_type: tinyint
         
       - name: semestre
+        description: "Semestre."
         data_type: tinyint
         
       - name: dia_semana_numero
+        description: "Número do dia da semana."
         data_type: tinyint
         
       - name: nome_mes
+        description: "Nome do mês."
         data_type: varchar
         
       - name: nome_dia_semana
+        description: "Nome do dia da semana."
         data_type: varchar
         
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
-          - type: not_null      
+          - type: not_null     
 
   - name: int_tempo_situacoes_especiais
     description: "Tabela tempo para fact_estabelecimentos" 
     columns:
       - name: sk_id
+        description: "SK da int_tempo_situacoes_especiais"
         data_type: integer
         constraints:
           - type: not_null
 
       - name: data_referencia
+        description: "Data da situação especial."
         data_type: date  
         
       - name: ano
+        description: "Número do Ano."
         data_type: smallint
         
       - name: mes
+        description: "Número do Mês."
         data_type: tinyint
         
       - name: dia
+        description: "Dia."
         data_type: tinyint
         
       - name: trimestre
+        description: "Trimestre."
         data_type: tinyint
         
       - name: semestre
+        description: "Semestre."
         data_type: tinyint
         
       - name: dia_semana_numero
+        description: "Número do dia da semana."
         data_type: tinyint
         
       - name: nome_mes
+        description: "Nome do mês."
         data_type: varchar
         
       - name: nome_dia_semana
+        description: "Nome do dia da semana."
         data_type: varchar
         
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null      
@@ -949,6 +1014,7 @@ models:
         data_type: varchar 
 
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null       
@@ -970,6 +1036,7 @@ models:
           - type: not_null
 
       - name: data_processamento
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
@@ -1008,7 +1075,7 @@ models:
             expression: "regiao IN('NÃO INDENTIFICADO','NÃO INFORMADO','NORTE','NORDESTE','CENTRO-OESTE','SUDESTE','SUL','EXTERIOR')"
 
       - name: data_processamento
-        description: "Data do processamento."
+        description: "Data e hora do processamento dos dados."
         data_type: timestamptz  
         constraints:
           - type: not_null
