@@ -151,7 +151,7 @@ def datalake_silver():
         
         logger.info("🦆 Iniciando unificação vetorizada com DuckDB...")
         
-        pasta_duckdb_tmp = "/opt/airflow/temp/duckdb_cache"
+        pasta_duckdb_tmp = "/opt/airflow/duckdb/cache"
         os.makedirs(pasta_duckdb_tmp, exist_ok=True)
         
         con = duckdb.connect(database=':memory:')

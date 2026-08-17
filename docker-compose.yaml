@@ -85,7 +85,8 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
     - ${AIRFLOW_PROJ_DIR:-.}/certs:/opt/airflow/certs
     - ${AIRFLOW_PROJ_DIR:-.}/dbt:/opt/airflow/dbt
-    - D:/docker:/opt/airflow/temp    
+    - ${AIRFLOW_PROJ_DIR:-.}/duckdb:/opt/airflow/duckdb
+
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -109,8 +110,7 @@ services:
       - "9001:9001" # Porta do Console UI (seu acesso pelo navegador)
     command: server /data --console-address ":9001"
     volumes:
-      #- ./minio_data:/data # Salva os dados do S3 localmente para não perder ao desligar
-      - D:/datalake_minio:/data
+      - ./minio:/data # Salva os dados do S3 localmente para não perder ao desligar      
     restart: always
 
   postgres:

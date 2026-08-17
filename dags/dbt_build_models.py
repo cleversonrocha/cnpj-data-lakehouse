@@ -26,7 +26,8 @@ def dbt_build_models():
     def dbt_build(ano_mes: str) -> str:
         return (
             f'export DBT_ANO_MES="{ano_mes}" && '
-            f'rm -f /opt/airflow/temp/cnpj_data_lakehouse_{ano_mes}.duckdb* && '
+            f'export DBT_DB_PATH="/opt/airflow/duckdb/cnpj_data_lakehouse_{ano_mes}.duckdb" && '
+            f'rm -f "$DBT_DB_PATH" && '
             f'cd /opt/airflow/dbt && '
             f'dbt build '            
             f'--vars \'{{"ano_mes": "{ano_mes}"}}\''

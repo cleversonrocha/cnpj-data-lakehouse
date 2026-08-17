@@ -109,10 +109,7 @@ CREATE VOLUME IF NOT EXISTS cnpj_data_lakehouse.gold.agg;
 ![CELL 1](imagens/cell_1.png)
 
 2. Clone o repositório: `git clone https://github.com/cleversonrocha/cnpj-data-lakehouse.git`
-3. No arquivo docker-compose-yaml, tem duas pastas mapeadas para volumes, altere conforme seu diretório:
-- **Airflow:** Ex.: `D:/docker:/opt/airflow/temp`
-- **MinIO:** Ex.: `D:/datalake_minio:/data`
-4. Crie um arquivo `.env` na pasta raiz com o conteúdo abaixo alterando os valores das variáveis conforme necessário:
+3. Crie um arquivo `.env` na pasta raiz com o conteúdo abaixo alterando os valores das variáveis conforme necessário:
 ```
 AIRFLOW_UID=50000
 FERNET_KEY=#Execute o comando -> python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
@@ -133,10 +130,10 @@ MINIO_ENDPOINT="http://minio:9000"
 DATABRICKS_HOST=<host_databricks>
 DATABRICKS_TOKEN=<databricks_token> #No menu principal do Databricks -> SQL Warehouse -> Python -> Create a personal access token - scope(all-apis) Ex.: dapi...
 ```
-5. Suba os containers com o Docker: `docker-compose up -d`
-6. Acesse o MinIO em `localhost:9001` e crie os buckets `bronze`, `silver` e `gold`.
-7. Acesse o Airflow em `localhost:8080`.
-8. A DAG "ingestao_bronze" vai iniciar e baixar automaticamente os dados do Portal Dados Abertos do Governo Federal, e após terminar será feita a chamada para a DAG "ingestao_silver", onde os arquivos "zip" são descompactados e o DuckDB lê os arquivos "csv" e converte para o formato "parquet" salvando os arquivos no bucket local "silver", ao finalizar, será iniciada a DAG "dbt_build_models" onde os dados serão tratados, modelados e salvos no bucket "gold" e subir todos os arquivos dos buckets do MinIO local para o Databricks.
+4. Suba os containers com o Docker: `docker-compose up -d`
+5. Acesse o MinIO em `localhost:9001` e crie os buckets `bronze`, `silver` e `gold`.
+6. Acesse o Airflow em `localhost:8080`.
+7. A DAG "ingestao_bronze" vai iniciar e baixar automaticamente os dados do Portal Dados Abertos do Governo Federal, e após terminar será feita a chamada para a DAG "ingestao_silver", onde os arquivos "zip" são descompactados e o DuckDB lê os arquivos "csv" e converte para o formato "parquet" salvando os arquivos no bucket local "silver", ao finalizar, será iniciada a DAG "dbt_build_models" onde os dados serão tratados, modelados e salvos no bucket "gold" e subir todos os arquivos dos buckets do MinIO local para o Databricks.
 
 **DAG ingestao_bronze:**
 ![DAG ingestao_bronze](imagens/ingestao_bronze.png)
@@ -151,7 +148,7 @@ DATABRICKS_TOKEN=<databricks_token> #No menu principal do Databricks -> SQL Ware
 Obs.: Deve ser iniciada manualmente.
 ![DAG auditoria_bronze_para_silver](imagens/auditoria_bronze_para_silver.png)
 
-9. Após os arquivos ja estiverem no Databricks:
+8. Após os arquivos ja estiverem no Databricks:
 - **Execute o 2º Bloco de código abaixo para criar as tabelas:**
 ```
 import os
@@ -264,7 +261,7 @@ OPTIMIZE cnpj_data_lakehouse.gold.fact_estabelecimentos FULL;
 
 ![CELL 3](imagens/cell_3.png)
 
-10. Configure a conexão do [relatório do Power BI](power_bi/cnpj_data_lakehouse_databricks_direct_query.pbix) com seus dados de conta do Databricks no modo direct_query.
+9. Configure a conexão do [relatório do Power BI](power_bi/cnpj_data_lakehouse_databricks_direct_query.pbix) com seus dados de conta do Databricks no modo direct_query.
 
 - Acesse o relatório deste projeto clicando [aqui](https://app.powerbi.com/view?r=eyJrIjoiMWE4MDUyN2YtMWJmZS00YzkyLTk1OGEtZmE0OTA2YTc2N2MwIiwidCI6IjY1OWNlMmI4LTA3MTQtNDE5OC04YzM4LWRjOWI2MGFhYmI1NyJ9&pageName=4333aa9cb667bc0d08b2).
 
