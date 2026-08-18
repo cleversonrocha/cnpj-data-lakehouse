@@ -66,6 +66,6 @@ Modelo Kimball clássico com uma tabela fato e nove dimensões compartilhadas, a
 ## 🔗 Links úteis
 
 - [Repositório no GitHub](https://github.com/cleversonrocha/cnpj-data-lakehouse)
-- [Dashboard Power BI](https://app.powerbi.com/view?r=eyJrIjoiMWE4MDUyN2YtMWJmZS00YzkyLTk1OGEtZmE0OTA2YTc2N2MwIiwidCI6IjY1OWNlMmI4LTA3MTQtNDE5OC04YzM4LWRjOWI2MGFhYmI1NyJ9&pageName=4333aa9cb667bc0d08b2)
+- [Dashboard Power BI](https://app.powerbi.com/view?r=eyJrIjoiNmJkYmUwY2ItYmI0NC00NGVkLThmMTgtZTAxNzQ0YWY0NDMxIiwidCI6IjY1OWNlMmI4LTA3MTQtNDE5OC04YzM4LWRjOWI2MGFhYmI1NyJ9)
 
 {% enddocs %}
