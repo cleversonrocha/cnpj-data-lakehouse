@@ -263,7 +263,9 @@ OPTIMIZE cnpj_data_lakehouse.gold.fact_estabelecimentos FULL;
 
 9. Configure a conexão do [relatório do Power BI](power_bi/cnpj_data_lakehouse_databricks_direct_query.pbix) com seus dados de conta do Databricks no modo direct_query.
 
-- Acesse o relatório deste projeto clicando [aqui](https://app.powerbi.com/view?r=eyJrIjoiMWE4MDUyN2YtMWJmZS00YzkyLTk1OGEtZmE0OTA2YTc2N2MwIiwidCI6IjY1OWNlMmI4LTA3MTQtNDE5OC04YzM4LWRjOWI2MGFhYmI1NyJ9&pageName=4333aa9cb667bc0d08b2).
+- Acesse o relatório deste projeto clicando [aqui](https://app.powerbi.com/view?r=eyJrIjoiNmJkYmUwY2ItYmI0NC00NGVkLThmMTgtZTAxNzQ0YWY0NDMxIiwidCI6IjY1OWNlMmI4LTA3MTQtNDE5OC04YzM4LWRjOWI2MGFhYmI1NyJ9).
+
+- Versão do relatório com toda a base importada (12GB) clique [aqui](https://drive.google.com/file/d/1wDbhEyovZQp9E3vAaIQl4TYT8Q_Z8WVw/view?usp=drive_link).
 
 ![Capa do relatório do Power BI](imagens/pagina1.png)
 
