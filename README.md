@@ -265,8 +265,7 @@ OPTIMIZE cnpj_data_lakehouse.gold.fact_estabelecimentos FULL;
 
 - Acesse o relatório deste projeto clicando [aqui](https://app.powerbi.com/view?r=eyJrIjoiNmJkYmUwY2ItYmI0NC00NGVkLThmMTgtZTAxNzQ0YWY0NDMxIiwidCI6IjY1OWNlMmI4LTA3MTQtNDE5OC04YzM4LWRjOWI2MGFhYmI1NyJ9).
 
-- Arquivo do relatório com toda a base importada (12GB) clique [aqui](https://drive.google.com/file/d/1MRnuA1L4UtRmidtiJYJLeGosOVAQZBDX/view?usp=sharing).
-* Necessária a instalação do Power BI Desktop.
+- Arquivo do relatório com toda a base importada (12GB) clique [aqui](https://drive.google.com/file/d/1MRnuA1L4UtRmidtiJYJLeGosOVAQZBDX/view?usp=sharing), sendo necessária a instalação do Power BI Desktop.
 
 ![Capa do relatório do Power BI](imagens/pagina1.png)
 
