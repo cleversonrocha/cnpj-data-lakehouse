@@ -3,7 +3,7 @@ cnpj_data_lakehouse:
   outputs:
     dev:
       type: duckdb            
-      path: "{{ env_var('DBT_DB_PATH', default='/opt/airflow/duckdb/cnpj_data_lakehouse_2026_08.duckdb') }}"
+      path: "{{ env_var('DBT_DB_PATH', default='../duckdb/cnpj_data_lakehouse_2026_08.duckdb') }}"
       threads: 1
             
       extensions:
@@ -11,7 +11,7 @@ cnpj_data_lakehouse:
         - aws
 
       config_options:
-        temp_directory: '/opt/airflow/duckdb/tmp'
+        temp_directory: '../duckdb/tmp'
 
       settings:
         max_memory: '13GB'
