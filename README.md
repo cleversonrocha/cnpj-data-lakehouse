@@ -12,7 +12,7 @@ Meu desafio foi criar um processo automatizado para ingerir, limpar, transformar
 ### 🗂️ Fonte dos Dados
 Os dados brutos processados neste pipeline são públicos, disponibilizados pela Receita Federal do Brasil e atualizados mensalmente.
 - **Portal de Dados Abertos:** [Cadastro Nacional da Pessoa Jurídica - CNPJ](https://dados.gov.br/dados/conjuntos-dados/cadastro-nacional-da-pessoa-juridica---cnpj)
-- **Formato de Origem:** Arquivos `.zip` contendo tabelas `.csv` com o cadastro completo de empresas, estabelecimentos, sócios e tabelas de domínio.
+- **Formato de Origem:** Arquivos `.zip` contendo arquivos no formato `.csv` com o cadastro completo de empresas, estabelecimentos, sócios e tabelas de domínio.
 
 ## 🛠️ Stack Tecnológico que estou estudando/aplicando
 
