@@ -329,7 +329,7 @@ models:
                 field: codigo
 
       - name: pais
-        description: "Nome do país."
+        description: "Código do país."
         data_type: smallint
         constraints:
           - type: not_null       
