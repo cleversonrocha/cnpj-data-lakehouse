@@ -56,7 +56,7 @@ def rfb_datalake_ingestion():
         return url_direta
 
     @task
-    def baixar_e_enviar_minio(url: str):     
+    def baixar_e_enviar_minio(url: str, data_interval_start=None) -> None:     
         
         caminho_temporario = "/tmp/receita_dados_brutos.zip"               
         
@@ -119,6 +119,8 @@ def rfb_datalake_ingestion():
                 aws_secret_access_key=MINIO_PASSWORD
             )
 
+            ano_mes_pasta = data_interval_start.in_timezone("America/Sao_Paulo").format("YYYY_MM")
+            
             with zipfile.ZipFile(caminho_temporario, 'r') as z_master:                
                 
                 arquivo_corrompido = z_master.testzip()
@@ -129,8 +131,8 @@ def rfb_datalake_ingestion():
                         # O MinIO não gosta de barras (/) invertidas ou duplas no nome. Garantimos um caminho limpo.
                         nome_limpo = nome_arquivo.replace("\\", "/").split("/")[-1]
                         
-                        if nome_limpo.endswith('.csv') or nome_limpo.endswith('.zip'):
-                            caminho_s3 = f"raw/{pendulum.now('America/Sao_Paulo').format('YYYY_MM')}/{nome_limpo}"
+                        if nome_limpo.endswith('.csv') or nome_limpo.endswith('.zip'):                            
+                            caminho_s3 = f"raw/{ano_mes_pasta}/{nome_limpo}"
                             logger.info(f" -> A enviar para o MinIO: {caminho_s3}")
                             
                             with z_master.open(nome_arquivo) as arquivo_extraido:
