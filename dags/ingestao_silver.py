@@ -16,7 +16,7 @@ logger = logging.getLogger("airflow.task")
     description='Extração dos arquivos csv compactados e conversão para parquet',
     schedule=None,
     is_paused_upon_creation=False,
-    start_date=pendulum.datetime(2026, 8, 1, tz="America/Sao_Paulo"),    
+    start_date=pendulum.datetime(2026, 9, 1, tz="America/Sao_Paulo"),    
     tags=["ingestao", "silver"]
 )
 

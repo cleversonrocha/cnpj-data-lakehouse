@@ -10,7 +10,7 @@ from databricks.sdk import WorkspaceClient
     description='Tratamento dos dados com dbt e gravação no MinIO',
     schedule=None,
     is_paused_upon_creation=False,
-    start_date=pendulum.datetime(2026, 8, 1, tz="America/Sao_Paulo"),    
+    start_date=pendulum.datetime(2026, 9, 1, tz="America/Sao_Paulo"),    
     tags=["transformacao", "dbt"],
 )
 def dbt_build_models():

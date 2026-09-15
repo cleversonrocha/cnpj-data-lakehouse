@@ -20,7 +20,7 @@ MINIO_BUCKET_BRONZE = 'bronze'
 @dag(
     dag_id="ingestao_bronze",
     schedule='@once',
-    start_date=pendulum.datetime(2026, 8, 1, tz="America/Sao_Paulo"),    
+    start_date=pendulum.datetime(2026, 9, 1, tz="America/Sao_Paulo"),    
     is_paused_upon_creation=False,
     tags=["ingestao", "bronze"]
 )
