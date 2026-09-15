@@ -135,9 +135,7 @@ models:
       - name: cnpj_basico
         description: "cnpj_basico"
         data_type: varchar
-        constraints:
-          - type: not_null
-
+        
       - name: razao_social
         description: "razao_social"
         data_type: varchar
@@ -187,9 +185,7 @@ models:
       - name: razao_social
         description: "Razão social da empresa."
         data_type: varchar
-        constraints:
-          - type: not_null
-
+        
       - name: natureza_juridica
         description: "Natureza jurídica da empresa."
         data_type: smallint
@@ -215,7 +211,7 @@ models:
           - type: not_null
 
       - name: ente_federativo_responsavel
-        description: "Natureza jurídica da empresa."
+        description: "Ente federativo responsável pela empresa."
         data_type: smallint
         constraints:
           - type: not_null

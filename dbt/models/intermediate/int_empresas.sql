@@ -27,7 +27,7 @@ WITH empresas_qualificadas AS (
             ) AS INTEGER
         ) AS rn
     FROM {{ ref('stg_empresas') }} em
-    QUALIFY rn = 1
+    QUALIFY rn = 1 AND cnpj_basico IS NOT NULL
 )
 
 SELECT    
