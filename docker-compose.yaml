@@ -97,8 +97,8 @@ x-airflow-common:
 
 services:
 
-  minio:
-    image: minio/minio:latest
+  minio:    
+    image: quay.io/minio/minio:latest           
     container_name: datalake_minio
     mem_limit: 512m
     mem_reservation: 256m
