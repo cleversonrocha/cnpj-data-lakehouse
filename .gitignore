@@ -1,8 +1,8 @@
 # Meus dados e buckets do Data Lake local
 minio_data/
-*.csv
-*.zip
-*.parquet
+minio_data/*.csv
+minio_data/*.zip
+minio_data/*.parquet
 
 # Meu ambiente Python e senhas
 venv/
