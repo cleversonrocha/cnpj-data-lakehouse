@@ -1,0 +1,20 @@
+{
+  "target_dir": "D:\\cnpj-data-lakehouse\\dbt\\target",
+  "fingerprints": {
+    "semantic_manifest.json": {
+      "size": 234,
+      "modified_secs": 1789568309
+    },
+    "run_results.json": {
+      "size": 358,
+      "modified_secs": 1789568309
+    },
+    "manifest.json": {
+      "size": 1146385,
+      "modified_secs": 1789568309
+    }
+  },
+  "write_source": "DirectWrite",
+  "context_dir": null,
+  "context_fingerprints": {}
+}
